@@ -1,4 +1,4 @@
-$<?php
+<?php
 /*
 	Plugin Name: WP Central API
 	Plugin URI:  http://wpcentral.io
