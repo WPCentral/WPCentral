@@ -91,7 +91,7 @@ class WP_Central_API {
 
 		$user_fields['meta'] = array(
 			'links' => array(
-				'self' => json_url( $this->base .'/' . $user->username ),
+				'self' => json_url( $this->base .'/' . $user->user_login ),
 			),
 		);
 
