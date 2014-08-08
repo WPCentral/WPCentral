@@ -61,6 +61,10 @@ class WP_Central_API {
 	}
 
 	public function get_user( $username ) {
+		if ( ! username_exists( $username ) ) {
+			return false;
+		}
+
 		$current_user_id = get_current_user_id();
 
 		$user = get_userdata( 1 );
