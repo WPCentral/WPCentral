@@ -100,6 +100,8 @@ class WP_Central_API {
 			'description' => $user->description,
 		);
 
+		$user_fields = wp_parse_args( WP_Central_Data_Colector::get_wp_user_data( $user, $user->user_login ), $user_fields );
+
 		$user_fields['meta'] = array(
 			'links' => array(
 				'self' => json_url( $this->base .'/' . $user->user_login ),
