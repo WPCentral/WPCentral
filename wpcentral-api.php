@@ -19,6 +19,10 @@ if ( ! defined('ABSPATH') ) {
 include 'inc/data-collector.php';
 include 'inc/wordpress-api.php';
 
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+	include 'wpcli/load.php';
+}
+
 class WP_Central_API {
 
 	/**
