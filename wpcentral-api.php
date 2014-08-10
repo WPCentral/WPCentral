@@ -16,6 +16,8 @@ if ( ! defined('ABSPATH') ) {
 	die();
 }
 
+include 'inc/data-collector.php';
+
 class WP_Central_API {
 
 	/**
