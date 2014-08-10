@@ -1,6 +1,39 @@
 <?php
 
+if ( ! defined('ABSPATH') ) {
+	die();
+}
+
 class WP_Central_WordPress_Api {
+
+	/**
+	 * Retrieve the contributor credits.
+	 *
+	 * @param string $wp_version The WordPress version.
+	 *
+	 * @return array|bool A list of all of the contributors, or false on error.
+	*/
+	public static function get_credits( $wp_version, $locale = '' ) {
+		// We can't request data before this.
+		if ( version_compare( $wp_version, '3.2', '<' ) ) {
+			return false;
+		}
+
+		$response = wp_remote_get( "http://api.wordpress.org/core/credits/1.1/?version=$wp_version&locale=$locale" );
+
+		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
+		$results = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_array( $results ) || $results['data']['version'] != (string) $wp_version ) {
+			return false;
+		}
+
+		return $results;
+	}
+
 
 	public static function get_plugins( $username, $args = array() ) {
 		if ( ! $username ) {
