@@ -59,7 +59,7 @@ class WP_Central_WordPress_Api {
 			'noquickjump'   => '1',
 			'changeset'     => 'on'
 		), 'https://core.trac.wordpress.org/search' );
-		$response = wp_remote_get( $results_url, array( 'sslverify' => false ) );
+		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 			$results  = wp_remote_retrieve_body( $response );
@@ -100,7 +100,7 @@ class WP_Central_WordPress_Api {
 			'noquickjump'   => '1',
 			'changeset'     => 'on'
 		), 'https://core.trac.wordpress.org/search' );
-		$response = wp_remote_get( $results_url, array( 'sslverify' => false ) );
+		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 			$results = wp_remote_retrieve_body( $response );
@@ -128,8 +128,8 @@ class WP_Central_WordPress_Api {
 			'uclimit'   => $limit,
 			'ucdir'     => 'older',
 			'format'    => 'json'
-		), 'http://codex.wordpress.org/api.php' );
-		$response = wp_remote_get( $results_url, array( 'sslverify' => false ) );
+		), 'https://codex.wordpress.org/api.php' );
+		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 			$results   = wp_remote_retrieve_body( $response );
@@ -166,8 +166,8 @@ class WP_Central_WordPress_Api {
 			'ususers'   =>  $username,
 			'usprop'    =>  'editcount',
 			'format'    =>  'json'
-		), 'http://codex.wordpress.org/api.php' );
-		$response = wp_remote_get( $results_url, array( 'sslverify' => false ) );
+		), 'https://codex.wordpress.org/api.php' );
+		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 			$results  = wp_remote_retrieve_body( $response );
