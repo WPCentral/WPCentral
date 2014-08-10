@@ -17,6 +17,7 @@ if ( ! defined('ABSPATH') ) {
 }
 
 include 'inc/data-collector.php';
+include 'inc/wordpress-api.php';
 
 class WP_Central_API {
 
