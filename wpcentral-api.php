@@ -72,9 +72,7 @@ class WP_Central_API {
 			return false;
 		}
 
-		$current_user_id = get_current_user_id();
-
-		$user = get_userdata( 1 );
+		$user = get_user_by( 'login', $username );
 
 		if ( empty( $user->ID ) ) {
 			return new WP_Error( 'json_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 400 ) );
