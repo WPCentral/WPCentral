@@ -64,6 +64,10 @@ class WP_Central_API {
 			array( array( $this, 'get_user' ), WP_JSON_Server::READABLE ),
 		);
 
+		$routes[ $this->base . '/(?P<username>\w+)/meta/(?P<key>\w+)'] = array(
+			array( array( $this, 'get_user_meta' ), WP_JSON_Server::READABLE ),
+		);
+
 		return $routes;
 	}
 
@@ -81,6 +85,30 @@ class WP_Central_API {
 		return $this->prepare_user( $user );
 	}
 
+	public function get_user_meta( $username, $key ) {
+		if ( ! username_exists( $username ) ) {
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+		}
+
+		$user = get_user_by( 'login', $username );
+
+		$user_fields = array(
+			'data' => WP_Central_Data_Colector::get_wp_user_data( $user, $user->user_login, $key )
+		);
+
+		if ( ! $user_fields['data'] ) {
+			return new WP_Error( 'json_user_invalid_id', __( 'This meta key is not an option' ), array( 'status' => 400 ) );
+		}
+
+		$user_fields['meta'] = array(
+			'links' => array(
+				'self'    => json_url( $this->base .'/' . $user->user_login ) . '/meta/' . $key,
+				'profile' => json_url( $this->base .'/' . $user->user_login ),
+			),
+		);
+
+		return apply_filters( 'wpcentral_api_prepare_user', $user_fields, $user );
+	}
 
 	/**
 	 *
