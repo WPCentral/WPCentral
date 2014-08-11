@@ -6,16 +6,30 @@ if ( ! defined('ABSPATH') ) {
 
 class WP_Central_Data_Colector {
 
-	public static function get_wp_user_data( $user, $username ) {
-		$data = array(
-			'core_contributed_to'      => self::get_user_value( $user, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
-			'core_contributions'       => self::get_user_value( $user, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ) ),
-			'core_contributions_count' => self::get_user_value( $user, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ) ),
-			'codex_items'              => self::get_user_value( $user, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ) ),
-			'codex_items_count'        => self::get_user_value( $user, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items_count' ) ),
-			'plugins'                  => self::get_user_value( $user, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ) ),
-			'themes'                   => self::get_user_value( $user, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ) ),
+	public static function get_wp_user_data( $user, $username, $meta = 'all' ) {
+		$options = array(
+			'core_contributed_to'      => array( $user, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
+			'core_contributions'       => array( $user, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ) ),
+			'core_contributions_count' => array( $user, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ) ),
+			'codex_items'              => array( $user, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ) ),
+			'codex_items_count'        => array( $user, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items_count' ) ),
+			'plugins'                  => array( $user, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ) ),
+			'themes'                   => array( $user, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ) ),
 		);
+
+		if ( 'all' != $meta ) {
+			if ( ! isset( $options[ $meta ] ) ) {
+				return false;
+			}
+
+			return call_user_func_array( array( 'WP_Central_Data_Colector', 'get_user_value' ), $options[ $meta ] );
+		}
+
+		$data = array();
+
+		foreach ( $options as $meta_key => $option ) {
+			$data[ $meta_key ] = call_user_func_array( array( 'WP_Central_Data_Colector', 'get_user_value' ), $option );
+		}
 
 		return $data;
 	}
