@@ -69,7 +69,7 @@ class WP_Central_API {
 
 	public function get_user( $username ) {
 		if ( ! username_exists( $username ) ) {
-			return false;
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
 		}
 
 		$user = get_user_by( 'login', $username );
