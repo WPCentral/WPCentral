@@ -16,6 +16,7 @@ if ( ! defined('ABSPATH') ) {
 	die();
 }
 
+include 'inc/contributors.php';
 include 'inc/data-collector.php';
 include 'inc/wordpress-api.php';
 
@@ -36,6 +37,8 @@ class WP_Central_API {
 
 		add_filter( 'json_url_prefix', array( $this, 'json_url_prefix' ) );
 		add_filter( 'json_endpoints', array( $this, 'register_routes' ), 30 );
+
+		new WP_Central_Contributor;
 	}
 
 
@@ -73,13 +76,13 @@ class WP_Central_API {
 
 	public function get_user( $username ) {
 		if ( ! username_exists( $username ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist.", 'wpcentral-api' ), array( 'status' => 400 ) );
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
 		}
 
 		$user = get_user_by( 'login', $username );
 
 		if ( empty( $user->ID ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( 'Invalid user ID.', 'wpcentral-api' ), array( 'status' => 400 ) );
+			return new WP_Error( 'json_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 400 ) );
 		}
 
 		return $this->prepare_user( $user );
@@ -87,7 +90,7 @@ class WP_Central_API {
 
 	public function get_user_meta( $username, $key ) {
 		if ( ! username_exists( $username ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist.", 'wpcentral-api' ), array( 'status' => 400 ) );
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
 		}
 
 		$user = get_user_by( 'login', $username );
@@ -97,7 +100,7 @@ class WP_Central_API {
 		);
 
 		if ( ! $user_fields['data'] ) {
-			return new WP_Error( 'json_user_invalid_id', __( 'This meta key is not an option', 'wpcentral-api' ), array( 'status' => 400 ) );
+			return new WP_Error( 'json_user_invalid_id', __( 'This meta key is not an option' ), array( 'status' => 400 ) );
 		}
 
 		$user_fields['meta'] = array(
