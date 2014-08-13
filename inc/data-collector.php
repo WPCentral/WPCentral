@@ -42,7 +42,8 @@ class WP_Central_Data_Colector {
 		$contributions = array();
 
 		while ( $version ) {
-			$credits = WP_Central_WordPress_Api::get_credits( $version );
+			$_version = (string) $version;
+			$credits  = WP_Central_WordPress_Api::get_credits( $_version );
 
 			if ( $credits ) {
 				foreach ( $credits['groups'] as $group_slug => $group_data ) {
@@ -51,8 +52,24 @@ class WP_Central_Data_Colector {
 					}
 
 					foreach ( $group_data['data'] as $person_username => $person_data ) {
-						if ( $person_username == $username ) {
-							$contributions[] = $version;
+						if ( strtolower( $person_username ) == $username ) {
+							if ( 'titles' == $group_data['type'] ) {
+								if ( $person_data[3] ) {
+									$contributions[ $_version ] = $person_data[3];
+								}
+								else if ( $group_data['name'] ) {
+									$contributions[ $_version ] = $group_data['name'];
+								}
+								else {
+									$contributions[ $_version ] = ucfirst( str_replace( '-', ' ', $group_slug ) );
+								}
+
+								$contributions[ $_version ] = rtrim( $contributions[ $_version ], 's' );
+							}
+							else {
+								$contributions[ $_version ] = __( 'Core Contributor', 'wpcentral-api' );
+							}
+
 							continue 2;
 						}	
 					}
