@@ -6,6 +6,10 @@ if ( ! defined('ABSPATH') ) {
 
 class WP_Central_Data_Colector {
 
+	public static function update_contributors_for_version( $wp_version, $create_users ) {
+
+	}
+
 	public static function get_wp_user_data( $user, $username, $meta = 'all' ) {
 		$options = array(
 			'core_contributed_to'      => array( $user, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
@@ -42,37 +46,11 @@ class WP_Central_Data_Colector {
 		$contributions = array();
 
 		while ( $version ) {
-			$_version = (string) $version;
-			$credits  = WP_Central_WordPress_Api::get_credits( $_version );
+			$role = self::loop_wp_version( $version, $username );
 
-			if ( $credits ) {
-				foreach ( $credits['groups'] as $group_slug => $group_data ) {
-					if ( 'libraries' == $group_data['type'] ) {
-						continue;
-					}
-
-					foreach ( $group_data['data'] as $person_username => $person_data ) {
-						if ( strtolower( $person_username ) == $username ) {
-							if ( 'titles' == $group_data['type'] ) {
-								if ( $person_data[3] ) {
-									$contributions[ $_version ] = $person_data[3];
-								}
-								else if ( $group_data['name'] ) {
-									$contributions[ $_version ] = $group_data['name'];
-								}
-								else {
-									$contributions[ $_version ] = ucfirst( str_replace( '-', ' ', $group_slug ) );
-								}
-
-								$contributions[ $_version ] = rtrim( $contributions[ $_version ], 's' );
-							}
-							else {
-								$contributions[ $_version ] = __( 'Core Contributor', 'wpcentral-api' );
-							}
-
-							continue 2;
-						}	
-					}
+			if ( false !== $role ) {
+				if ( $role ) {
+					$contributions[ (string) $version ] = $role;
 				}
 
 				$version -= 0.1;
@@ -85,6 +63,52 @@ class WP_Central_Data_Colector {
 		return $contributions;
 	}
 
+
+
+	private static function loop_wp_version( $version, $username = false ) {
+		$_version = (string) $version;
+
+		$credits  = WP_Central_WordPress_Api::get_credits( $_version );
+
+		if ( $credits ) {
+
+			foreach ( $credits['groups'] as $group_slug => $group_data ) {
+				if ( 'libraries' == $group_data['type'] ) {
+					continue;
+				}
+
+				foreach ( $group_data['data'] as $person_username => $person_data ) {
+					if ( strtolower( $person_username ) == $username ) {
+						$role = '';
+
+						if ( 'titles' == $group_data['type'] ) {
+
+							if ( $person_data[3] ) {
+								$role = $person_data[3];
+							}
+							else if ( $group_data['name'] ) {
+								$role = $group_data['name'];
+							}
+							else {
+								$role = ucfirst( str_replace( '-', ' ', $group_slug ) );
+							}
+
+							$role = rtrim( $role, 's' );
+						}
+						else {
+							$role = __( 'Core Contributor', 'wpcentral-api' );
+						}
+
+						return $role;
+					}	
+				}
+			}
+
+			return null;
+		}
+
+		return false;
+	}
 
 	private static function get_user_value( $user, $field, $username = false, $fallback = false ) {
 		$data = '';
