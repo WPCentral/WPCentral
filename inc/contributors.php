@@ -71,6 +71,8 @@ class WP_Central_Contributor {
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
 	function codex_book_updated_messages( $messages ) {
+		$post = get_post();
+
 		$post_type_object = get_post_type_object( 'contributor' );
 
 		$messages['contributor'] = array(
