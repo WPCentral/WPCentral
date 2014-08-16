@@ -66,9 +66,7 @@ class WP_Central_Data_Colector {
 
 
 	private static function loop_wp_version( $version, $username = false ) {
-		$_version = (string) $version;
-
-		$credits  = WP_Central_WordPress_Api::get_credits( $_version );
+		$credits  = WP_Central_WordPress_Api::get_credits( $version );
 
 		if ( $credits ) {
 
@@ -82,7 +80,6 @@ class WP_Central_Data_Colector {
 						$role = '';
 
 						if ( 'titles' == $group_data['type'] ) {
-
 							if ( $person_data[3] ) {
 								$role = $person_data[3];
 							}
@@ -115,7 +112,8 @@ class WP_Central_Data_Colector {
 
 		if ( $user->has_prop( $field ) ) {
 			$data = $user->get( $field );
-		} else if( $username && $fallback ) {
+		}
+		else if( $username && $fallback ) {
 			$data = call_user_func( $fallback, $username );
 
 			// Cache the data
