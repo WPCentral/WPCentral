@@ -125,7 +125,7 @@ class WP_Central_API {
 			'first_name'  => $user->first_name,
 			'last_name'   => $user->last_name,
 			'URL'         => $user->user_url,
-			'avatar'      => json_get_avatar_url( $user->user_email ),
+			'avatar'      => strtok( json_get_avatar_url( $user->user_email ), '?' ),
 			'description' => $user->description,
 		);
 
