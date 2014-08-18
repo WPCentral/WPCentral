@@ -29,7 +29,7 @@ class WP_Central_API {
 	/**
 	 * Base route name
 	 */
-	protected $base = '/users';
+	protected $base = '/contributors';
 
 
 	public function __construct() {
@@ -75,28 +75,28 @@ class WP_Central_API {
 	}
 
 	public function get_user( $username ) {
-		if ( ! username_exists( $username ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+		if ( ! $contributor = get_page_by_path( $username, OBJECT, 'contributor' ) ) {
+			$created = WP_Central_Contributor::create( $username );
+
+			if ( ! $created ) {
+				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+			}
 		}
 
-		$user = get_user_by( 'login', $username );
-
-		if ( empty( $user->ID ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( 'Invalid user ID.' ), array( 'status' => 400 ) );
-		}
-
-		return $this->prepare_user( $user );
+		return $this->prepare_contributor( $contributor );
 	}
 
 	public function get_user_meta( $username, $key ) {
-		if ( ! username_exists( $username ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+		if ( ! $contributor = get_page_by_path( $username, OBJECT, 'contributor' ) ) {
+			$created = WP_Central_Contributor::create( $username );
+
+			if ( ! $created ) {
+				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+			}
 		}
 
-		$user = get_user_by( 'login', $username );
-
 		$user_fields = array(
-			'data' => WP_Central_Data_Colector::get_wp_user_data( $user, $user->user_login, $key )
+			'data' => WP_Central_Data_Colector::get_wp_user_data( $contributor, $contributor->post_name, $key )
 		);
 
 		if ( ! $user_fields['data'] ) {
@@ -105,12 +105,12 @@ class WP_Central_API {
 
 		$user_fields['meta'] = array(
 			'links' => array(
-				'self'    => json_url( $this->base .'/' . $user->user_login ) . '/meta/' . $key,
-				'profile' => json_url( $this->base .'/' . $user->user_login ),
+				'self'    => json_url( $this->base .'/' . $contributor->post_name ) . '/meta/' . $key,
+				'profile' => json_url( $this->base .'/' . $contributor->post_name ),
 			),
 		);
 
-		return apply_filters( 'wpcentral_api_prepare_user', $user_fields, $user );
+		return apply_filters( 'wpcentral_api_prepare_user', $user_fields, $contributor );
 	}
 
 	/**
@@ -119,25 +119,27 @@ class WP_Central_API {
 	 *
 	 * @return array
 	 */
-	protected function prepare_user( $user ) {
+	protected function prepare_contributor( $contributor ) {
 		$user_fields = array(
-			'username'    => $user->user_login,
-			'first_name'  => $user->first_name,
-			'last_name'   => $user->last_name,
-			'URL'         => $user->user_url,
-			'avatar'      => strtok( json_get_avatar_url( $user->user_email ), '?' ),
-			'description' => $user->description,
+			'username'    => $contributor->post_name,
+			'name'        => $contributor->post_title,
+			'avatar'      => $contributor->avatar,
+			'location'    => $contributor->location,
+			'company'     => $contributor->company,
+			'website'     => $contributor->website,
+			'socials'     => $contributor->socials,
+			'badges'      => $contributor->badges,
 		);
 
-		$user_fields = wp_parse_args( WP_Central_Data_Colector::get_wp_user_data( $user, $user->user_login ), $user_fields );
+		$user_fields = wp_parse_args( WP_Central_Data_Colector::get_wp_user_data( $contributor, $contributor->post_name ), $user_fields );
 
 		$user_fields['meta'] = array(
 			'links' => array(
-				'self' => json_url( $this->base .'/' . $user->user_login ),
+				'self' => json_url( $this->base .'/' . $contributor->post_name ),
 			),
 		);
 
-		return apply_filters( 'wpcentral_api_prepare_user', $user_fields, $user );
+		return apply_filters( 'wpcentral_api_prepare_user', $user_fields, $contributor );
 	}
 
 }

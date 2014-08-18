@@ -11,12 +11,44 @@ class WP_Central_Contributor {
 		add_filter( 'post_updated_messages', array( $this, 'codex_book_updated_messages' ) );
 	}
 
+
+	public static function create( $username ) {
+		$data = WP_Central_Data_Colector::get_user_info_from_profile( $username );
+
+		if ( ! $data ) {
+			return false;
+		}
+
+		$args = array(
+			'post_name'   => $username,
+			'post_title'  => $data['name'],
+			'post_type'   => 'contributor',
+			'post_status' => 'publish'
+		);
+
+		$post_id = wp_insert_post( $args );
+
+		update_post_meta( $post_id, 'avatar', $data['avatar'] );
+		update_post_meta( $post_id, 'location', $data['location'] );
+		update_post_meta( $post_id, 'website', $data['website'] );
+		update_post_meta( $post_id, 'company', $data['company'] );
+		update_post_meta( $post_id, 'socials', $data['socials'] );
+		update_post_meta( $post_id, 'badges', $data['badges'] );
+
+		$post = get_post( $post_id );
+
+		WP_Central_Data_Colector::get_wp_user_data( $post, $username );
+
+		return $post;
+	}
+
+
 	/**
 	 * Register a book post type.
 	 *
 	 * @link http://codex.wordpress.org/Function_Reference/register_post_type
 	 */
-	function register_post_type() {
+	public function register_post_type() {
 		$labels = array(
 			'name'               => _x( 'Contributors', 'post type general name', 'wpcentral-api' ),
 			'singular_name'      => _x( 'Contributor', 'post type singular name', 'wpcentral-api' ),
@@ -70,7 +102,7 @@ class WP_Central_Contributor {
 	 *
 	 * @return array Amended post update messages with new CPT update messages.
 	 */
-	function codex_book_updated_messages( $messages ) {
+	public function codex_book_updated_messages( $messages ) {
 		$post = get_post();
 
 		$post_type_object = get_post_type_object( 'contributor' );

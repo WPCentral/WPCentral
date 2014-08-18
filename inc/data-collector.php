@@ -10,15 +10,15 @@ class WP_Central_Data_Colector {
 
 	}
 
-	public static function get_wp_user_data( $user, $username, $meta = 'all' ) {
+	public static function get_wp_user_data( $post, $username, $meta = 'all' ) {
 		$options = array(
-			'core_contributed_to'      => array( $user, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
-			'core_contributions'       => array( $user, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ) ),
-			'core_contributions_count' => array( $user, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ) ),
-			'codex_items'              => array( $user, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ) ),
-			'codex_items_count'        => array( $user, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_count' ) ),
-			'plugins'                  => array( $user, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ) ),
-			'themes'                   => array( $user, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ) ),
+			'core_contributed_to'      => array( $post, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
+			'core_contributions'       => array( $post, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ) ),
+			'core_contributions_count' => array( $post, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ) ),
+			'codex_items'              => array( $post, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ) ),
+			'codex_items_count'        => array( $post, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_count' ) ),
+			'plugins'                  => array( $post, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ) ),
+			'themes'                   => array( $post, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ) ),
 		);
 
 		if ( 'all' != $meta ) {
@@ -109,14 +109,14 @@ class WP_Central_Data_Colector {
 
 
 
-	public function get_user_info_from_profile( $username ) {
+	public static function get_user_info_from_profile( $username ) {
 		$url = 'http://profiles.wordpress.org/' . $username;
 
 		$request = wp_remote_get( $url, array( 'redirection' => 0 ) );
 		$code    = wp_remote_retrieve_response_code( $request );
 
 		if ( 200 !== $code ) {
-			return '';
+			return false;
 		}
 
 		$body = wp_remote_retrieve_body( $request );
@@ -128,6 +128,7 @@ class WP_Central_Data_Colector {
 		$name     = $finder->query('//h2[@class="fn"]');
 		$avatar   = $finder->query('//div[@id="meta-status-badge-container"]/a/img');
 		$location = $finder->query('//li[@id="user-location"]');
+		$website  = $finder->query('//li[@id="user-website"]/a');
 		$company  = $finder->query('//li[@id="user-company"]');
 		$socials  = $finder->query('//ul[@id="user-social-media-accounts"]/li/a');
 		$badges   = $finder->query('//ul[@id="user-badges"]/li/div');
@@ -136,6 +137,7 @@ class WP_Central_Data_Colector {
 			'name'     => trim( $name->item(0)->nodeValue ),
 			'avatar'   => strtok( $avatar->item(0)->getAttribute('src'), '?' ),
 			'location' => trim( $location->item(0)->nodeValue ),
+			'website'  => trim( $website->item(0)->getAttribute('href') ),
 			'company'  => trim( preg_replace( '/\t+/', '', $company->item(0)->nodeValue ) ),
 			'socials'  => array(),
 			'badges'   => array(),
@@ -157,17 +159,17 @@ class WP_Central_Data_Colector {
 
 
 
-	private static function get_user_value( $user, $field, $username = false, $fallback = false ) {
+	private static function get_user_value( $post, $field, $username = false, $fallback = false ) {
 		$data = '';
 
-		if ( $user->has_prop( $field ) ) {
-			$data = $user->get( $field );
+		if ( $post->$field ) {
+			$data = $post->$field;
 		}
 		else if( $username && $fallback ) {
 			$data = call_user_func( $fallback, $username );
 
 			// Cache the data
-			update_user_meta( $user->ID, $field, $data );
+			update_post_meta( $post->ID, $field, $data );
 		}
 
 		return $data;
