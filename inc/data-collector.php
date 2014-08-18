@@ -107,6 +107,56 @@ class WP_Central_Data_Colector {
 		return false;
 	}
 
+
+
+	public function get_user_info_from_profile( $username ) {
+		$url = 'http://profiles.wordpress.org/' . $username;
+
+		$request = wp_remote_get( $url, array( 'redirection' => 0 ) );
+		$code    = wp_remote_retrieve_response_code( $request );
+
+		if ( 200 !== $code ) {
+			return '';
+		}
+
+		$body = wp_remote_retrieve_body( $request );
+
+		$dom = new DOMDocument();
+		@$dom->loadHTML( $body ); // Error supressing due to the fact that special characters haven't been converted to HTML.
+		$finder = new DomXPath( $dom );
+
+		$name     = $finder->query('//h2[@class="fn"]');
+		$avatar   = $finder->query('//div[@id="meta-status-badge-container"]/a/img');
+		$location = $finder->query('//li[@id="user-location"]');
+		$company  = $finder->query('//li[@id="user-company"]');
+		$socials  = $finder->query('//ul[@id="user-social-media-accounts"]/li/a');
+		$badges   = $finder->query('//ul[@id="user-badges"]/li/div');
+
+		$data = array(
+			'name'     => trim( $name->item(0)->nodeValue ),
+			'avatar'   => strtok( $avatar->item(0)->getAttribute('src'), '?' ),
+			'location' => trim( $location->item(0)->nodeValue ),
+			'company'  => trim( preg_replace( '/\t+/', '', $company->item(0)->nodeValue ) ),
+			'socials'  => array(),
+			'badges'   => array(),
+		);
+
+		foreach ( $socials as $item ) {
+			$icon = $item->getElementsByTagName("div");
+
+			$data['socials'][ $icon->item(0)->getAttribute('title') ] = $item->getAttribute('href');
+		}
+
+		foreach ( $badges as $badge ) {
+			$data['badges'][] = $badge->getAttribute('title');
+		}
+
+		return $data;
+	}
+
+
+
+
 	private static function get_user_value( $user, $field, $username = false, $fallback = false ) {
 		$data = '';
 
