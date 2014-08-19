@@ -83,6 +83,10 @@ class WP_Central_API {
 			}
 		}
 
+		if ( ! ( $contributor instanceof WP_Post ) ) {
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+		}
+
 		return $this->prepare_contributor( $contributor );
 	}
 
