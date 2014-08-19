@@ -76,9 +76,9 @@ class WP_Central_API {
 
 	public function get_user( $username ) {
 		if ( ! $contributor = get_page_by_path( $username, OBJECT, 'contributor' ) ) {
-			$created = WP_Central_Contributor::create( $username );
+			$contributor = WP_Central_Contributor::create( $username );
 
-			if ( ! $created ) {
+			if ( ! $contributor ) {
 				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
 			}
 		}
