@@ -35,6 +35,35 @@ class WP_Central_WordPress_Api {
 	}
 
 
+	/**
+	 * Retrieve language packs
+	 *
+	 * @param string $wp_version The WordPress version.
+	 *
+	 * @return array|bool A list of all locales with language packs, or false on error.
+	*/
+	public static function get_language_packs( $wp_version ) {
+		// We can't request data before this.
+		if ( version_compare( $wp_version, '4.0', '<' ) ) {
+			return false;
+		}
+
+		$response = wp_remote_get( 'api.wordpress.org/translations/core/1.0/?version=' . $wp_version );
+
+		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
+			return false;
+		}
+
+		$results = json_decode( wp_remote_retrieve_body( $response ), true );
+
+		if ( ! is_array( $results ) ) {
+			return false;
+		}
+
+		return $results;
+	}
+
+
 	public static function get_plugins( $username, $args = array() ) {
 		if ( ! $username ) {
 			return false;
