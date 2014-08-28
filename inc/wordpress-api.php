@@ -48,7 +48,7 @@ class WP_Central_WordPress_Api {
 			return false;
 		}
 
-		$response = wp_remote_get( 'api.wordpress.org/translations/core/1.0/?version=' . $wp_version );
+		$response = wp_remote_get( 'http://api.wordpress.org/translations/core/1.0/?version=' . $wp_version );
 
 		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 			return false;

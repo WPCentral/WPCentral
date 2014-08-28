@@ -139,7 +139,7 @@ class WP_Central_API {
 
 		$user_fields['meta'] = array(
 			'links' => array(
-				'self' => json_url( $this->base .'/' . $contributor->post_name ),
+				'self' => json_url( $this->base . '/' . $contributor->post_name ),
 			),
 		);
 
