@@ -19,7 +19,7 @@ class WP_Central_WordPress_Api {
 			return false;
 		}
 
-		$response = wp_remote_get( "http://api.wordpress.org/core/credits/1.1/?version=$wp_version&locale=$locale" );
+		$response = wp_remote_get( 'http://api.wordpress.org/core/credits/1.1/?version=' . $wp_version . '&locale=' .$locale );
 
 		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 			return false;
@@ -116,11 +116,14 @@ class WP_Central_WordPress_Api {
 
 		$items = array();
 
-		$results_url = add_query_arg( array(
-			'q'             => 'props+' . $username,
-			'noquickjump'   => '1',
-			'changeset'     => 'on'
-		), 'https://core.trac.wordpress.org/search' );
+		$results_url = add_query_arg(
+			array(
+				'q'             => 'props+' . $username,
+				'noquickjump'   => '1',
+				'changeset'     => 'on'
+			),
+			'https://core.trac.wordpress.org/search'
+		);
 		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
@@ -157,11 +160,14 @@ class WP_Central_WordPress_Api {
 
 		$count = 0;
 
-		$results_url = add_query_arg( array(
-			'q'             => 'props+' . $username,
-			'noquickjump'   => '1',
-			'changeset'     => 'on'
-		), 'https://core.trac.wordpress.org/search' );
+		$results_url = add_query_arg(
+			array(
+				'q'             => 'props+' . $username,
+				'noquickjump'   => '1',
+				'changeset'     => 'on'
+			),
+			'https://core.trac.wordpress.org/search'
+		);
 		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
@@ -222,13 +228,16 @@ class WP_Central_WordPress_Api {
 
 		$count = 0;
 
-		$results_url = add_query_arg( array(
-			'action'    =>  'query',
-			'list'      =>  'users',
-			'ususers'   =>  $username,
-			'usprop'    =>  'editcount',
-			'format'    =>  'json'
-		), 'https://codex.wordpress.org/api.php' );
+		$results_url = add_query_arg(
+			array(
+				'action'    =>  'query',
+				'list'      =>  'users',
+				'ususers'   =>  $username,
+				'usprop'    =>  'editcount',
+				'format'    =>  'json'
+			),
+			'https://codex.wordpress.org/api.php'
+		);
 		$response = wp_remote_get( $results_url );
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
