@@ -41,16 +41,17 @@ class WP_Central_Data_Colector {
 	public static function get_contributions_of_user( $username ) {
 		global $wp_version;
 
-		$version = $wp_version - 0;
+		$version = number_format( $wp_version, 1, '.', '' );
 
 		$contributions = array();
-
 		while ( $version ) {
+			$version = number_format( $version, 1, '.', '' );
+
 			$role = self::loop_wp_version( $version, $username );
 
 			if ( false !== $role ) {
 				if ( $role ) {
-					$contributions[ (string) $version ] = $role;
+					$contributions[ $version ] = $role;
 				}
 
 				$version -= 0.1;
