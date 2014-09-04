@@ -137,11 +137,19 @@ class WP_Central_Data_Colector {
 			'name'     => trim( $name->item(0)->nodeValue ),
 			'avatar'   => strtok( $avatar->item(0)->getAttribute('src'), '?' ),
 			'location' => trim( $location->item(0)->nodeValue ),
-			'website'  => trim( $website->item(0)->getAttribute('href') ),
-			'company'  => trim( preg_replace( '/\t+/', '', $company->item(0)->nodeValue ) ),
+			'company'  => '',
+			'website'  => '',
 			'socials'  => array(),
 			'badges'   => array(),
 		);
+
+		if ( $company->length ) {
+			$data['company'] = trim( preg_replace( '/\t+/', '', $company->item(0)->nodeValue ) );
+		}
+
+		if ( $website->length ) {
+			$data['website'] = trim( $website->item(0)->getAttribute('href') );
+		}
 
 		foreach ( $socials as $item ) {
 			$icon = $item->getElementsByTagName("div");
