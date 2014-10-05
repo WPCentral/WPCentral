@@ -171,7 +171,7 @@ class WP_Central_Data_Colector {
 	private static function get_user_value( $post, $field, $username = false, $fallback = false ) {
 		$data = '';
 
-		if ( $post->$field ) {
+		if ( $post->$field || $post->$field === 0 ) {
 			$data = $post->$field;
 		}
 		else if( $username && $fallback ) {
