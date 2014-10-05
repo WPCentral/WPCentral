@@ -9,6 +9,8 @@ class WP_Central_Contributor {
 	public function __construct() {
 		add_action( 'init', array( $this, 'register_post_type' ) );
 		add_filter( 'post_updated_messages', array( $this, 'codex_book_updated_messages' ) );
+
+		add_shortcode( 'contributors', array( $this, 'contributors_search' ) );
 	}
 
 
@@ -141,6 +143,27 @@ class WP_Central_Contributor {
 		}
 
 		return $messages;
+	}
+
+
+
+	public static function contributors_search() {
+		wp_enqueue_script( 'contributors-search', plugins_url( 'js/contributors-search.js', dirname( __FILE__ ) ), array( 'jquery' ), WP_Central_API::version );
+
+		$html = '
+		<form action="" method="post" class="searchform">
+			<div class="input-group">
+				<input type="text" id="searchform-contributor" class="form-control input-lg" placeholder="' . __( 'Find a WordPress contributor.', 'wpcentral-api' ) . '">
+
+				<span class="input-group-btn">
+					<button class="btn btn-primary btn-lg" type="button">' . __( 'Search ', 'wpcentral-api' ) . '</button>
+				</span>
+			</div>
+		</form>';
+
+		$html .= '<div id="contributors"></div>';
+
+		return $html;
 	}
 
 }
