@@ -176,7 +176,9 @@ class WP_Central_WordPress_Api {
 
 			preg_match( $pattern, $results, $matches );
 
-			$count = intval( $matches[1] );
+			if ( isset( $matches[1] ) ) {
+				$count = intval( $matches[1] );
+			}
 		}
 
 		return $count;
