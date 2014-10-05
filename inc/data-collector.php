@@ -111,7 +111,7 @@ class WP_Central_Data_Colector {
 
 
 	public static function get_user_info_from_profile( $username ) {
-		$url = 'http://profiles.wordpress.org/' . $username;
+		$url = 'https://profiles.wordpress.org/' . $username;
 
 		$request = wp_remote_get( $url, array( 'redirection' => 0 ) );
 		$code    = wp_remote_retrieve_response_code( $request );

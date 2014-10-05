@@ -19,7 +19,7 @@ class WP_Central_WordPress_Api {
 			return false;
 		}
 
-		$response = wp_remote_get( 'http://api.wordpress.org/core/credits/1.1/?version=' . $wp_version . '&locale=' .$locale );
+		$response = wp_remote_get( 'https://api.wordpress.org/core/credits/1.1/?version=' . $wp_version . '&locale=' .$locale );
 
 		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 			return false;
@@ -48,7 +48,7 @@ class WP_Central_WordPress_Api {
 			return false;
 		}
 
-		$response = wp_remote_get( 'http://api.wordpress.org/translations/core/1.0/?version=' . $wp_version );
+		$response = wp_remote_get( 'https://api.wordpress.org/translations/core/1.0/?version=' . $wp_version );
 
 		if ( is_wp_error( $response ) || 200 != wp_remote_retrieve_response_code( $response ) ) {
 			return false;
