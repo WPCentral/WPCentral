@@ -65,6 +65,10 @@ class WP_Central_API {
 	 * @return array Modified routes
 	 */
 	public function register_routes( $routes ) {
+		$routes[ $this->base ] = array(
+			array( array( $this, 'get_users' ), WP_JSON_Server::READABLE ),
+		);
+
 		$routes[ $this->base . '/(?P<username>\w+)'] = array(
 			array( array( $this, 'get_user' ), WP_JSON_Server::READABLE ),
 		);
@@ -74,6 +78,46 @@ class WP_Central_API {
 		);
 
 		return $routes;
+	}
+
+	public function get_users( $search = '', $page = 1 ) {
+		$query = array(
+			'post_type'      => 'contributor',
+			'posts_per_page' => 10,
+			'paged'          => absint( $page ),
+			's'              => sanitize_text_field( $search ),
+		);
+
+		$post_query = new WP_Query();
+		$posts_list = $post_query->query( $query );
+
+		$response   = new WP_JSON_Response();
+		$response->query_navigation_headers( $post_query );
+
+		if ( ! $posts_list ) {
+			$response->set_data( array() );
+			return $response;
+		}
+
+		// holds all the posts data
+		$struct = array();
+
+		$response->header( 'Last-Modified', mysql2date( 'D, d M Y H:i:s', get_lastpostmodified( 'GMT' ), 0 ) . ' GMT' );
+
+		foreach ( $posts_list as $post ) {
+			$response->link_header( 'item', json_url( '/posts/' . $post->ID ), array( 'title' => $post->post_title ) );
+			$post_data = $this->prepare_contributor( $post );
+
+			if ( is_wp_error( $post_data ) ) {
+				continue;
+			}
+
+			$struct[] = $post_data;
+		}
+
+		$response->set_data( $struct );
+
+		return $response;
 	}
 
 	public function get_user( $username ) {
