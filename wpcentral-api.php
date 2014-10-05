@@ -26,6 +26,8 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
 class WP_Central_API {
 
+	const version = '1.0';
+
 	/**
 	 * Base route name
 	 */
