@@ -26,13 +26,13 @@ class WP_Central_Data_Colector {
 				return false;
 			}
 
-			return call_user_func_array( array( 'WP_Central_Data_Colector', 'get_user_value' ), $options[ $meta ] );
+			return call_user_func_array( array( __CLASS__, 'get_user_value' ), $options[ $meta ] );
 		}
 
 		$data = array();
 
 		foreach ( $options as $meta_key => $option ) {
-			$data[ $meta_key ] = call_user_func_array( array( 'WP_Central_Data_Colector', 'get_user_value' ), $option );
+			$data[ $meta_key ] = call_user_func_array( array( __CLASS__, 'get_user_value' ), $option );
 		}
 
 		return $data;
