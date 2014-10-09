@@ -11,14 +11,18 @@ class WP_Central_Data_Colector {
 	}
 
 	public static function get_wp_user_data( $post, $username, $meta = 'all' ) {
+		$current = current_time( 'timestamp' );
+		$synced  = mysql2date( 'U', $post->post_modified ) + DAY_IN_SECONDS;
+		$force   = $synced < $current && 'all' == $meta;
+
 		$options = array(
-			'core_contributed_to'      => array( $post, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ) ),
-			'core_contributions'       => array( $post, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ) ),
-			'core_contributions_count' => array( $post, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ) ),
-			'codex_items'              => array( $post, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ) ),
-			'codex_items_count'        => array( $post, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_count' ) ),
-			'plugins'                  => array( $post, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ) ),
-			'themes'                   => array( $post, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ) ),
+			'core_contributed_to'      => array( $post, 'core_contributed_to', $username, array( 'WP_Central_Data_Colector', 'get_contributions_of_user' ), $force ),
+			'core_contributions'       => array( $post, 'core_contributions', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_items' ), $force  ),
+			'core_contributions_count' => array( $post, 'core_contributions_count', $username, array( 'WP_Central_WordPress_Api', 'get_changeset_count' ), $force  ),
+			'codex_items'              => array( $post, 'codex_items', $username, array( 'WP_Central_WordPress_Api', 'get_codex_items' ), $force  ),
+			'codex_items_count'        => array( $post, 'codex_items_count', $username, array( 'WP_Central_WordPress_Api', 'get_codex_count' ), $force  ),
+			'plugins'                  => array( $post, 'plugins', $username, array( 'WP_Central_WordPress_Api', 'get_plugins' ), $force  ),
+			'themes'                   => array( $post, 'themes', $username, array( 'WP_Central_WordPress_Api', 'get_themes' ), $force  ),
 		);
 
 		if ( 'all' != $meta ) {
@@ -34,6 +38,15 @@ class WP_Central_Data_Colector {
 		foreach ( $options as $meta_key => $option ) {
 			$data[ $meta_key ] = call_user_func_array( array( __CLASS__, 'get_user_value' ), $option );
 		}
+
+		// Update the date to the current
+		wp_update_post( 
+			array(
+				'ID'                => $post->ID,
+				'post_modified'     => current_time( 'mysql' ),
+				'post_modified_gmt' => current_time( 'mysql', 1 )
+			)
+		);
 
 		return $data;
 	}
@@ -168,13 +181,13 @@ class WP_Central_Data_Colector {
 
 
 
-	private static function get_user_value( $post, $field, $username = false, $fallback = false ) {
+	private static function get_user_value( $post, $field, $username = false, $fallback = false, $force = false ) {
 		$data = '';
 
-		if ( $post->$field || $post->$field === 0 ) {
+		if ( ( $post->$field || $post->$field === 0 ) && ! $force ) {
 			$data = $post->$field;
 		}
-		else if( $username && $fallback ) {
+		else if ( $username && $fallback ) {
 			$data = call_user_func( $fallback, $username );
 
 			// Cache the data
