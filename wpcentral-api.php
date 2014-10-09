@@ -69,11 +69,11 @@ class WP_Central_API {
 			array( array( $this, 'get_users' ), WP_JSON_Server::READABLE ),
 		);
 
-		$routes[ $this->base . '/(?P<username>\w+)'] = array(
+		$routes[ $this->base . '/(?P<username>[a-z-]+)'] = array(
 			array( array( $this, 'get_user' ), WP_JSON_Server::READABLE ),
 		);
 
-		$routes[ $this->base . '/(?P<username>\w+)/meta/(?P<key>\w+)'] = array(
+		$routes[ $this->base . '/(?P<username>[a-z-]+)/meta/(?P<key>\w+)'] = array(
 			array( array( $this, 'get_user_meta' ), WP_JSON_Server::READABLE ),
 		);
 
