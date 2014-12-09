@@ -52,9 +52,7 @@ class WP_Central_Data_Colector {
 	}
 
 	public static function get_contributions_of_user( $username ) {
-		global $wp_version;
-
-		$version = number_format( $wp_version, 1, '.', '' );
+		$version = number_format( self::get_latest_wp_version('major'), 1, '.', '' );
 
 		$contributions = array();
 		while ( $version ) {
@@ -195,6 +193,27 @@ class WP_Central_Data_Colector {
 		}
 
 		return $data;
+	}
+
+
+	public static function get_latest_wp_version( $type ) {
+		global $wp_version;
+		
+		// Current version for this installation.
+		$version = $wp_version;
+
+		// If there is an update then use that version.
+		$cur = get_preferred_from_update_core();
+		if ( isset( $cur->response ) || $cur->response == 'upgrade' ) {
+			$version = $cur->current;
+		}
+
+		// Only return the first part of a version when the major versin is being requested.
+		if ( 'major' == $type ) {
+			$version = substr( $version, 0, 3 );
+		}
+
+		return $version;
 	}
 
 }
