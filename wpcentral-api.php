@@ -121,16 +121,18 @@ class WP_Central_API {
 	}
 
 	public function get_user( $username ) {
+		header('Access-Control-Allow-Origin: *');
+
 		if ( ! $contributor = get_page_by_path( $username, OBJECT, 'contributor' ) ) {
 			$contributor = WP_Central_Contributor::create( $username );
 
 			if ( ! $contributor ) {
-				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 404 ) );
 			}
 		}
 
 		if ( ! ( $contributor instanceof WP_Post ) ) {
-			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+			return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 404 ) );
 		}
 
 		return $this->prepare_contributor( $contributor );
@@ -141,7 +143,7 @@ class WP_Central_API {
 			$created = WP_Central_Contributor::create( $username );
 
 			if ( ! $created ) {
-				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 400 ) );
+				return new WP_Error( 'json_user_invalid_id', __( "User doesn't exist." ), array( 'status' => 404 ) );
 			}
 		}
 
