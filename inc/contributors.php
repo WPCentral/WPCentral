@@ -52,20 +52,20 @@ class WP_Central_Contributor {
 	 */
 	public function register_post_type() {
 		$labels = array(
-			'name'               => _x( 'Contributors', 'post type general name', 'wpcentral-api' ),
-			'singular_name'      => _x( 'Contributor', 'post type singular name', 'wpcentral-api' ),
-			'menu_name'          => _x( 'Contributors', 'admin menu', 'wpcentral-api' ),
-			'name_admin_bar'     => _x( 'Contributor', 'add new on admin bar', 'wpcentral-api' ),
-			'add_new'            => _x( 'Add New', 'book', 'wpcentral-api' ),
-			'add_new_item'       => __( 'Add New Contributor', 'wpcentral-api' ),
-			'new_item'           => __( 'New Contributor', 'wpcentral-api' ),
-			'edit_item'          => __( 'Edit Contributor', 'wpcentral-api' ),
-			'view_item'          => __( 'View Contributor', 'wpcentral-api' ),
-			'all_items'          => __( 'All Contributors', 'wpcentral-api' ),
-			'search_items'       => __( 'Search Contributors', 'wpcentral-api' ),
-			'parent_item_colon'  => __( 'Parent Contributors:', 'wpcentral-api' ),
-			'not_found'          => __( 'No contributors found.', 'wpcentral-api' ),
-			'not_found_in_trash' => __( 'No contributors found in Trash.', 'wpcentral-api' )
+			'name'               => _x( 'Contributors', 'post type general name', 'wpcentral' ),
+			'singular_name'      => _x( 'Contributor', 'post type singular name', 'wpcentral' ),
+			'menu_name'          => _x( 'Contributors', 'admin menu', 'wpcentral' ),
+			'name_admin_bar'     => _x( 'Contributor', 'add new on admin bar', 'wpcentral' ),
+			'add_new'            => _x( 'Add New', 'book', 'wpcentral' ),
+			'add_new_item'       => __( 'Add New Contributor', 'wpcentral' ),
+			'new_item'           => __( 'New Contributor', 'wpcentral' ),
+			'edit_item'          => __( 'Edit Contributor', 'wpcentral' ),
+			'view_item'          => __( 'View Contributor', 'wpcentral' ),
+			'all_items'          => __( 'All Contributors', 'wpcentral' ),
+			'search_items'       => __( 'Search Contributors', 'wpcentral' ),
+			'parent_item_colon'  => __( 'Parent Contributors:', 'wpcentral' ),
+			'not_found'          => __( 'No contributors found.', 'wpcentral' ),
+			'not_found_in_trash' => __( 'No contributors found in Trash.', 'wpcentral' )
 		);
 
 		$args = array(
@@ -111,33 +111,33 @@ class WP_Central_Contributor {
 
 		$messages['contributor'] = array(
 			0  => '', // Unused. Messages start at index 1.
-			1  => __( 'Contributor updated.', 'wpcentral-api' ),
-			2  => __( 'Custom field updated.', 'wpcentral-api' ),
-			3  => __( 'Custom field deleted.', 'wpcentral-api' ),
-			4  => __( 'Contributor updated.', 'wpcentral-api' ),
+			1  => __( 'Contributor updated.', 'wpcentral' ),
+			2  => __( 'Custom field updated.', 'wpcentral' ),
+			3  => __( 'Custom field deleted.', 'wpcentral' ),
+			4  => __( 'Contributor updated.', 'wpcentral' ),
 			/* translators: %s: date and time of the revision */
-			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Book restored to revision from %s', 'wpcentral-api' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
-			6  => __( 'Contributor published.', 'wpcentral-api' ),
-			7  => __( 'Contributor saved.', 'wpcentral-api' ),
-			8  => __( 'Contributor submitted.', 'wpcentral-api' ),
+			5  => isset( $_GET['revision'] ) ? sprintf( __( 'Book restored to revision from %s', 'wpcentral' ), wp_post_revision_title( (int) $_GET['revision'], false ) ) : false,
+			6  => __( 'Contributor published.', 'wpcentral' ),
+			7  => __( 'Contributor saved.', 'wpcentral' ),
+			8  => __( 'Contributor submitted.', 'wpcentral' ),
 			9  => sprintf(
-				__( 'Contributor scheduled for: <strong>%1$s</strong>.', 'wpcentral-api' ),
+				__( 'Contributor scheduled for: <strong>%1$s</strong>.', 'wpcentral' ),
 				// translators: Publish box date format, see http://php.net/date
-				date_i18n( __( 'M j, Y @ G:i', 'wpcentral-api' ), strtotime( $post->post_date ) )
+				date_i18n( __( 'M j, Y @ G:i', 'wpcentral' ), strtotime( $post->post_date ) )
 			),
-			10 => __( 'Contributor draft updated.', 'wpcentral-api' )
+			10 => __( 'Contributor draft updated.', 'wpcentral' )
 		);
 
 		if ( $post_type_object->publicly_queryable ) {
 			$permalink = get_permalink( $post->ID );
 
-			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View contributor', 'wpcentral-api' ) );
+			$view_link = sprintf( ' <a href="%s">%s</a>', esc_url( $permalink ), __( 'View contributor', 'wpcentral' ) );
 			$messages['contributor'][1] .= $view_link;
 			$messages['contributor'][6] .= $view_link;
 			$messages['contributor'][9] .= $view_link;
 
 			$preview_permalink = add_query_arg( 'preview', 'true', $permalink );
-			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview contributor', 'wpcentral-api' ) );
+			$preview_link = sprintf( ' <a target="_blank" href="%s">%s</a>', esc_url( $preview_permalink ), __( 'Preview contributor', 'wpcentral' ) );
 			$messages['contributor'][8]  .= $preview_link;
 			$messages['contributor'][10] .= $preview_link;
 		}
@@ -153,10 +153,10 @@ class WP_Central_Contributor {
 		$html = '
 		<form action="" method="post" class="searchform">
 			<div class="input-group">
-				<input type="text" id="searchform-contributor" class="form-control input-lg" placeholder="' . __( 'Find a WordPress contributor.', 'wpcentral-api' ) . '">
+				<input type="text" id="searchform-contributor" class="form-control input-lg" placeholder="' . __( 'Find a WordPress contributor.', 'wpcentral' ) . '">
 
 				<span class="input-group-btn">
-					<button class="btn btn-primary btn-lg" type="button">' . __( 'Search ', 'wpcentral-api' ) . '</button>
+					<button class="btn btn-primary btn-lg" type="button">' . __( 'Search ', 'wpcentral' ) . '</button>
 				</span>
 			</div>
 		</form>';

@@ -105,7 +105,7 @@ class WP_Central_Data_Colector {
 							$role = rtrim( $role, 's' );
 						}
 						else {
-							$role = __( 'Core Contributor', 'wpcentral-api' );
+							$role = __( 'Core Contributor', 'wpcentral' );
 						}
 
 						return $role;

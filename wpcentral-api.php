@@ -1,14 +1,14 @@
 <?php
 /*
-	Plugin Name: WP Central API
+	Plugin Name: WP Central
 	Plugin URI:  http://wpcentral.io
-	Description: The API for WP Central
+	Description: The code behind WP Central
 	Version:     1.0
 	Author:      markoheijnen
 	Author URI:  http://markoheijnen.com
 	License:     GPL
 
-	Text Domain: wpcentral-api
+	Text Domain: wpcentral
 */
 
 
@@ -25,7 +25,7 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	include 'wpcli/load.php';
 }
 
-class WP_Central_API {
+class WP_Central {
 
 	const version = '1.0';
 
@@ -43,9 +43,9 @@ class WP_Central_API {
 	 * @since 1.0.0
 	 */
 	public function load_textdomain() {
-		load_plugin_textdomain( 'wpcentral-api', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
+		load_plugin_textdomain( 'wpcentral', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
 	}
 
 }
 
-$wp_central_api = new WP_Central_API;
+$wp_central = new WP_Central;
