@@ -148,7 +148,7 @@ class WP_Central_Contributor {
 
 
 	public static function contributors_search() {
-		wp_enqueue_script( 'contributors-search', plugins_url( 'js/contributors-search.js', dirname( __FILE__ ) ), array( 'jquery' ), WP_Central_API::version );
+		wp_enqueue_script( 'contributors-search', plugins_url( 'js/contributors-search.js', dirname( __FILE__ ) ), array( 'jquery' ), WP_Central::version );
 
 		$html = '
 		<form action="" method="post" class="searchform">
