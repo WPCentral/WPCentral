@@ -244,9 +244,11 @@ class WP_Central_WordPress_Api {
 
 		if ( 200 == wp_remote_retrieve_response_code( $response ) ) {
 			$results  = wp_remote_retrieve_body( $response );
+			$raw      = json_decode( $results );
 
-			$raw   = json_decode( $results );
-			$count = (int) $raw->query->users[0]->editcount;
+			if ( isset( $raw->query ) ) {
+				$count = (int) $raw->query->users[0]->editcount;
+			}
 		}
 
 		return $count;
