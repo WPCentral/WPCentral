@@ -6,6 +6,12 @@ if ( ! defined('ABSPATH') ) {
 
 class WP_Central_JSON_API {
 
+	/**
+	 * Base route name
+	 */
+	protected $base = '/contributors';
+
+
 	public function __construct() {
 		add_filter( 'json_url_prefix', array( $this, 'json_url_prefix' ) );
 		add_filter( 'json_endpoints', array( $this, 'register_routes' ), 30 );

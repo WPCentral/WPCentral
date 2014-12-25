@@ -29,12 +29,6 @@ class WP_Central_API {
 
 	const version = '1.0';
 
-	/**
-	 * Base route name
-	 */
-	protected $base = '/contributors';
-
-
 	public function __construct() {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
