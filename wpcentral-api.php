@@ -18,8 +18,13 @@ if ( ! defined('ABSPATH') ) {
 
 include 'inc/contributors.php';
 include 'inc/data-collector.php';
+include 'inc/graph.php';
 include 'inc/json-api.php';
 include 'inc/wordpress-api.php';
+
+// Graphs
+include 'inc/graphs/morris.php';
+include 'inc/graphs/chartjs.php';
 
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
 	include 'wpcli/load.php';
@@ -33,6 +38,7 @@ class WP_Central {
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 
 		new WP_Central_Contributor;
+		new WP_Central_Graph;
 		new WP_Central_JSON_API;
 	}
 
