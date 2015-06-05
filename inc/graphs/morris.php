@@ -15,7 +15,8 @@ class WP_Central_Graph_Morris extends WP_Central_Graph_Abstract {
 
 		$html .= '<script type="text/javascript">';
 		$html .= 'jQuery(document).ready(function($) {';
-		$html .= 'morris_objects.push( Morris.Line({';
+		$html .= 'window.morris_objects = window.morris_objects || [];';
+		$html .= 'window.morris_objects.push( Morris.Line({';
 		$html .= "element: '" . $this->unique_id() . "',";
 		$html .= 'data :' . json_encode( $this->data );
 
@@ -51,7 +52,8 @@ class WP_Central_Graph_Morris extends WP_Central_Graph_Abstract {
 
 		$html .= '<script type="text/javascript">';
 		$html .= 'jQuery(document).ready(function($) {';
-		$html .= 'morris_objects.push( Morris.Area({';
+		$html .= 'window.morris_objects = window.morris_objects || [];';
+		$html .= 'window.morris_objects.push( Morris.Area({';
 		$html .= "element: '" . $this->unique_id() . "',";
 		$html .= 'data :' . json_encode( $this->data );
 
@@ -90,7 +92,8 @@ class WP_Central_Graph_Morris extends WP_Central_Graph_Abstract {
 
 		$html .= '<script type="text/javascript">';
 		$html .= 'jQuery(document).ready(function($) {';
-		$html .= 'morris_objects.push( Morris.Donut({';
+		$html .= 'window.morris_objects = window.morris_objects || [];';
+		$html .= 'window.morris_objects.push( Morris.Donut({';
 		$html .= "element: '" . $this->unique_id() . "',";
 		$html .= 'data :' . json_encode( $this->data );
 
@@ -114,7 +117,8 @@ class WP_Central_Graph_Morris extends WP_Central_Graph_Abstract {
 
 		$html .= '<script type="text/javascript">';
 		$html .= 'jQuery(document).ready(function($) {';
-		$html .= 'morris_objects.push( Morris.Bar({';
+		$html .= 'window.morris_objects = window.morris_objects || [];';
+		$html .= 'window.morris_objects.push( Morris.Bar({';
 		$html .= "element: '" . $this->unique_id() . "',";
 		$html .= 'data :' . json_encode( $this->data );
 

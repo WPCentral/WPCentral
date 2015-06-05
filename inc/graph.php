@@ -47,7 +47,7 @@ class WP_Central_Graph {
 
 
 	public function versions_last_year_wordpress() {
-		$data = WordPress_Stats_Api::wordpress_version_by_day();
+		$data = WP_Central_Stats::wordpress_version_by_day();
 		$keys = array_keys( (array) end( $data) );
 		unset( $keys[0] );
 		$keys = array_values( $keys );
@@ -56,7 +56,7 @@ class WP_Central_Graph {
 	}
 
 	public function versions_last_year_php() {
-		$data = WordPress_Stats_Api::php_version_by_day();
+		$data = WP_Central_Stats::php_version_by_day();
 		$keys = array_keys( (array) end( $data) );
 		unset( $keys[0] );
 		$keys = array_values( $keys );
@@ -65,7 +65,7 @@ class WP_Central_Graph {
 	}
 
 	public function versions_last_year_mysql() {
-		$data = WordPress_Stats_Api::mysql_version_by_day();
+		$data = WP_Central_Stats::mysql_version_by_day();
 		$keys = array_keys( (array) end( $data) );
 		unset( $keys[0] );
 		$keys = array_values( $keys );
@@ -77,21 +77,21 @@ class WP_Central_Graph {
 	 * @return bool|string
 	 */
 	public function current_wordpress_versions() {
-		return $this->get( 'chartjs', 'doughnut_chart', WordPress_Stats_Api::wordpress_version() );
+		return $this->get( 'chartjs', 'doughnut_chart', WP_Central_Stats::wordpress_version() );
 	}
 
 	/**
 	 * @return bool|string
 	 */
 	public function current_php_versions() {
-		return $this->get( 'chartjs', 'doughnut_chart', WordPress_Stats_Api::php_version() );
+		return $this->get( 'chartjs', 'doughnut_chart', WP_Central_Stats::php_version() );
 	}
 
 	/**
 	 * @return bool|string
 	 */
 	public function current_mysql_versions() {
-		return $this->get( 'chartjs', 'doughnut_chart', WordPress_Stats_Api::mysql_version() );
+		return $this->get( 'chartjs', 'doughnut_chart', WP_Central_Stats::mysql_version() );
 	}
 
 }
