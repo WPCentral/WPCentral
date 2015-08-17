@@ -447,7 +447,7 @@ class WP_Central_Stats {
 		$table = self::db_table();
 		$query = "SELECT DATE_FORMAT(date_gmt,'%X W%V') AS date, version, AVG(count) AS count
 		FROM {$table}
-		WHERE type='php' AND version NOT IN ('4.3', '4.4', '5.0', '5.6', '5.7')
+		WHERE type='php' AND version NOT IN ('4.3', '4.4', '5.0', '5.7')
 		GROUP BY DATE_FORMAT(date_gmt,'%X W%V'), version";
 
 		$results = $wpdb->get_results( $query );
