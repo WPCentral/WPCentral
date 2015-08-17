@@ -203,6 +203,7 @@ class WP_Central_Stats {
 			'3.9',
 			'4.0',
 			'4.1',
+			'4.2',
 		);
 	}
 
@@ -212,7 +213,37 @@ class WP_Central_Stats {
 		}
 
 		$releases = array(
+			'4.2' => array(
+				'4.2.4' => array(
+					'title' => 'WordPress 4.2.4 Security and Maintenance Release',
+					'link'  => 'https://wordpress.org/news/2015/08/wordpress-4-2-4-security-and-maintenance-release/'
+				),
+				'4.2.3' => array(
+					'title' => 'WordPress 4.2.3 Security and Maintenance Release',
+					'link'  => 'https://wordpress.org/news/2015/07/wordpress-4-2-3/'
+				),
+				'4.2.2' => array(
+					'title' => 'WordPress 4.2.2 Security and Maintenance Release',
+					'link'  => 'https://wordpress.org/news/2015/05/wordpress-4-2-2/'
+				),
+				'4.2.1' => array(
+					'title' => 'WordPress 4.2.1 Security Release',
+					'link'  => 'https://wordpress.org/news/2015/04/wordpress-4-2-1/'
+				),
+				'4.2' => array(
+					'title' => 'WordPress 4.2 “Powell”',
+					'link'  => 'https://wordpress.org/news/2015/04/powell/'
+				)
+			),
 			'4.1' => array(
+				'4.1.2' => array(
+					'title' => 'WordPress 4.1.2 Security Release',
+					'link'  => 'https://wordpress.org/news/2015/04/wordpress-4-1-2/'
+				),
+				'4.1.1' => array(
+					'title' => 'WordPress 4.1.1 Maintenance Release',
+					'link'  => 'https://wordpress.org/news/2015/02/wordpress-4-1-1/'
+				),
 				'4.1' => array(
 					'title' => 'WordPress 4.1 “Dinah”',
 					'link'  => 'https://wordpress.org/news/2014/12/dinah/'
