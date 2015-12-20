@@ -21,7 +21,6 @@ include 'inc/data-collector.php';
 include 'inc/graph.php';
 include 'inc/json-api.php';
 include 'inc/stats.php';
-include 'inc/stats-collector.php';
 include 'inc/wordpress-api.php';
 
 // Graphs

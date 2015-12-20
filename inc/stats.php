@@ -5,50 +5,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Central_Stats {
 
-	public function __construct() {
-		new WP_Central_Stats_Collector;
-		$this->add_cron();
-	}
-
-	public function install() {
-		global $wpdb;
-
-		$table = self::db_table();
-
-		if( $wpdb->get_var( "SHOW TABLES LIKE '" . $table . "'" ) != $table ) {
-			$sql = "CREATE TABLE IF NOT EXISTS " . $table . " (
-				type varchar(32) NOT NULL,
-				version varchar(8) NOT NULL,
-				count DECIMAL(10,1) NOT NULL,
-				date_gmt datetime NOT NULL
-			);";
-
-			require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-			dbDelta( $sql );
-		}
-
-		$this->add_cron();
-	}
-
-	public function deactivate() {
-		wp_clear_scheduled_hook( 'cron_wordpress_stats' );
-		wp_clear_scheduled_hook( 'cron_wordpress_stats_daily' );
-	}
-
-	public function add_cron() {
-		if ( ! wp_next_scheduled( 'cron_wordpress_stats' ) ) {
-			date_default_timezone_set("UTC");
-			$time = time();
-			$time = ceil( $time / ( 1 * 60 ) ) * ( 1 * 60 );
-
-			wp_schedule_event( $time, 'minutly', 'cron_wordpress_stats' );
-
-			wp_schedule_event( strtotime( 'today 7am' ), 'daily', 'cron_wordpress_stats_daily' );
-		}
-	}
-
-
-
 	public static function db_table() {
 		global $wpdb;
 
@@ -101,7 +57,13 @@ class WP_Central_Stats {
 			$version = self::wp_version();
 			$query = "SELECT count FROM {$table} WHERE type='downloads' AND version = '{$version}' ORDER BY date_gmt DESC LIMIT 1";
 			$count = $wpdb->get_row( $query );
-			$count = number_format( $count->count );
+
+			if ( $count ) {
+				$count = number_format( $count->count );
+			}
+			else {
+				$count = 0;
+			}
 
 			set_transient( 'wordpress_downloads', $count, 60 );
 		}
