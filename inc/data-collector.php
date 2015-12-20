@@ -10,7 +10,7 @@ class WP_Central_Data_Colector {
 
 	}
 
-	public static function get_wp_user_data( $post, $username, $meta = 'all' ) {
+	public static function get_wp_user_data( & $post, $username, $meta = 'all' ) {
 		$current = current_time( 'timestamp' );
 		$synced  = mysql2date( 'U', $post->post_modified ) + DAY_IN_SECONDS;
 		$force   = $synced < $current && 'all' == $meta;
@@ -39,14 +39,29 @@ class WP_Central_Data_Colector {
 			$data[ $meta_key ] = call_user_func_array( array( __CLASS__, 'get_user_value' ), $option );
 		}
 
-		// Update the date to the current
-		wp_update_post( 
-			array(
-				'ID'                => $post->ID,
+
+		if ( $force || $post->post_modified == $post->post_date ) {
+			$user_info = WP_Central_Data_Colector::get_user_info_from_profile( $username );
+
+			$update_args = array(
+				'ID'           => $post->ID,
+				'post_title'   => $user_info['name'],
+				'post_content' => $user_info['description'],
+
 				'post_modified'     => current_time( 'mysql' ),
 				'post_modified_gmt' => current_time( 'mysql', 1 )
-			)
-		);
+			);
+			wp_update_post( $update_args );
+
+			update_post_meta( $post->ID, 'avatar', $user_info['avatar'] );
+			update_post_meta( $post->ID, 'location', $user_info['location'] );
+			update_post_meta( $post->ID, 'website', $user_info['website'] );
+			update_post_meta( $post->ID, 'company', $user_info['company'] );
+			update_post_meta( $post->ID, 'socials', $user_info['socials'] );
+			update_post_meta( $post->ID, 'badges', $user_info['badges'] );
+
+			$post = get_post( $post->ID );
+		}
 
 		return $data;
 	}
@@ -142,17 +157,17 @@ class WP_Central_Data_Colector {
 		$location = $finder->query('//li[@id="user-location"]');
 		$website  = $finder->query('//li[@id="user-website"]/a');
 		$company  = $finder->query('//li[@id="user-company"]');
-		$socials  = $finder->query('//ul[@id="user-social-media-accounts"]/li/a');
 		$badges   = $finder->query('//ul[@id="user-badges"]/li/div');
 
 		$data = array(
-			'name'     => trim( $name->item(0)->nodeValue ),
-			'avatar'   => strtok( $avatar->item(0)->getAttribute('src'), '?' ),
-			'location' => trim( $location->item(0)->nodeValue ),
-			'company'  => '',
-			'website'  => '',
-			'socials'  => array(),
-			'badges'   => array(),
+			'name'         => trim( $name->item(0)->nodeValue ),
+			'description'  => '',
+			'avatar'       => strtok( $avatar->item(0)->getAttribute('src'), '?' ),
+			'location'     => trim( $location->item(0)->nodeValue ),
+			'company'      => '',
+			'website'      => '',
+			'socials'      => array(),
+			'badges'       => array(),
 		);
 
 		if ( $company->length ) {
@@ -163,15 +178,31 @@ class WP_Central_Data_Colector {
 			$data['website'] = trim( $website->item(0)->getAttribute('href') );
 		}
 
-		foreach ( $socials as $item ) {
-			$icon = $item->getElementsByTagName("div");
-
-			$data['socials'][ $icon->item(0)->getAttribute('title') ] = $item->getAttribute('href');
-		}
-
 		foreach ( $badges as $badge ) {
-			$data['badges'][] = $badge->getAttribute('title');
+			preg_match( '/(?<!\w)badge-(?:[^_\W]|-)+/', $badge->getAttribute('class'), $matches );
+			$data['badges'][ $matches[0] ] = $badge->getAttribute('title');
 		}
+
+
+		if ( $data['avatar'] ) {
+			$hash    = str_replace( '/avatar/', '', parse_url( $data['avatar'] )['path'] );
+			$request = wp_remote_get( 'https://en.gravatar.com/' . $hash . '.json' );
+			$code    = wp_remote_retrieve_response_code( $request );
+
+			if ( 200 === $code ) {
+				$body  = json_decode( wp_remote_retrieve_body( $request ) );
+				$entry = $body->entry[0];
+
+				$data['description'] = $entry->aboutMe;
+
+				if ( isset( $entry->accounts ) ) {
+					foreach ( $body->entry[0]->accounts as $item ) {
+						$data['socials'][ $item->shortname ] = $item->url;
+					}
+				}
+			}
+		}
+
 
 		return $data;
 	}

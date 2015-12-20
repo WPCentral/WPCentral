@@ -23,21 +23,13 @@ class WP_Central_Contributor {
 
 		$args = array(
 			'post_name'   => $username,
-			'post_title'  => $data['name'],
+			'post_title'  => $username,
 			'post_type'   => 'contributor',
 			'post_status' => 'publish'
 		);
 
 		$post_id = wp_insert_post( $args );
-
-		update_post_meta( $post_id, 'avatar', $data['avatar'] );
-		update_post_meta( $post_id, 'location', $data['location'] );
-		update_post_meta( $post_id, 'website', $data['website'] );
-		update_post_meta( $post_id, 'company', $data['company'] );
-		update_post_meta( $post_id, 'socials', $data['socials'] );
-		update_post_meta( $post_id, 'badges', $data['badges'] );
-
-		$post = get_post( $post_id );
+		$post    = get_post( $post_id );
 
 		WP_Central_Data_Colector::get_wp_user_data( $post, $username );
 
