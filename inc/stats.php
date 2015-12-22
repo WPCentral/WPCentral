@@ -134,173 +134,36 @@ class WP_Central_Stats {
 
 
 	public static function get_major_releases() {
-		return array(
-			'3.3',
-			'3.4',
-			'3.5',
-			'3.6',
-			'3.7',
-			'3.8',
-			'3.9',
-			'4.0',
-			'4.1',
-			'4.2',
-		);
+		if ( false === ( $releases = get_transient( 'wordpress_releases' ) ) ) {
+			$request = wp_remote_get( self::$api . '/versions' );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
+
+			if ( $data ) {
+				$releases = wp_list_pluck( $data, 'version' );
+				set_transient( 'wordpress_releases', $releases, DAY_IN_SECONDS );
+			}
+		}
+
+		return $releases;
 	}
 
 	public static function get_minor_releases( $major = null ) {
-		if( $major == null ) {
+		if ( $major == null ) {
 			$major = self::wp_version();
 		}
 
-		$releases = array(
-			'4.2' => array(
-				'4.2.4' => array(
-					'title' => 'WordPress 4.2.4 Security and Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2015/08/wordpress-4-2-4-security-and-maintenance-release/'
-				),
-				'4.2.3' => array(
-					'title' => 'WordPress 4.2.3 Security and Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2015/07/wordpress-4-2-3/'
-				),
-				'4.2.2' => array(
-					'title' => 'WordPress 4.2.2 Security and Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2015/05/wordpress-4-2-2/'
-				),
-				'4.2.1' => array(
-					'title' => 'WordPress 4.2.1 Security Release',
-					'link'  => 'https://wordpress.org/news/2015/04/wordpress-4-2-1/'
-				),
-				'4.2' => array(
-					'title' => 'WordPress 4.2 “Powell”',
-					'link'  => 'https://wordpress.org/news/2015/04/powell/'
-				)
-			),
-			'4.1' => array(
-				'4.1.2' => array(
-					'title' => 'WordPress 4.1.2 Security Release',
-					'link'  => 'https://wordpress.org/news/2015/04/wordpress-4-1-2/'
-				),
-				'4.1.1' => array(
-					'title' => 'WordPress 4.1.1 Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2015/02/wordpress-4-1-1/'
-				),
-				'4.1' => array(
-					'title' => 'WordPress 4.1 “Dinah”',
-					'link'  => 'https://wordpress.org/news/2014/12/dinah/'
-				)
-			),
-			'4.0' => array(
-				'4.0.1' => array(
-					'title' => 'WordPress 4.0.1',
-					'link'  => 'https://wordpress.org/news/2014/11/wordpress-4-0-1/'
-				),
-				'4.0' => array(
-					'title' => 'WordPress 4.0 “Benny”',
-					'link'  => 'https://wordpress.org/news/2014/09/benny/'
-				)
-			),
-			'3.9' => array(
-				'3.9.2' => array(
-					'title' => 'WordPress 3.9.2 Security Release',
-					'link'  => 'https://wordpress.org/news/2014/08/wordpress-3-9-2/'
-				),
-				'3.9.1' => array(
-					'title' => 'WordPress 3.9.1 Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2014/05/wordpress-3-9-1/'
-				),
-				'3.9' => array(
-					'title' => 'WordPress 3.9 “Smith”',
-					'link'  => 'https://wordpress.org/news/2014/04/smith/'
-				)
-			),
-			'3.8' => array(
-				'3.8.3' => array(
-					'title' => 'WordPress 3.8.3 Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2014/04/wordpress-3-8-3/'
-				),
-				'3.8.2' => array(
-					'title' => 'WordPress 3.8.2 Security Release',
-					'link'  => 'https://wordpress.org/news/2014/04/wordpress-3-8-2/'
-				),
-				'3.8.1' => array(
-					'title' => 'WordPress 3.8.1 Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2014/01/wordpress-3-8-1/'
-				),
-				'3.8' => array(
-					'title' => 'WordPress 3.8 “Parker”',
-					'link'  => 'https://wordpress.org/news/2013/12/parker/'
-				)
-			),
-			'3.7' => array(
-				'3.7.1' => array(
-					'title' => 'WordPress 3.7.3 Security Release',
-					'link'  => 'https://wordpress.org/news/2014/04/wordpress-3-8-2/'
-				),
-				'3.7.1' => array(
-					'title' => 'WordPress 3.7.1 Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2013/10/wordpress-3-7-1/'
-				),
-				'3.7' => array(
-					'title' => 'WordPress 3.7 “Basie”',
-					'link'  => 'https://wordpress.org/news/2013/10/basie/'
-				)
-			),
-			'3.6' => array(
-				'3.6.1' => array(
-					'title' => 'WordPress 3.6.1 Maintenance and Security Release',
-					'link'  => 'https://wordpress.org/news/2013/09/wordpress-3-6-1/'
-				),
-				'3.6' => array(
-					'title' => 'WordPress 3.6 “Oscar”',
-					'link'  => 'https://wordpress.org/news/2013/08/oscar/'
-				)
-			),
-			'3.5' => array(
-				'3.5.2' => array(
-					'title' => 'WordPress 3.5.2 Maintenance and Security Release',
-					'link'  => 'https://wordpress.org/news/2013/06/wordpress-3-5-2/'
-				),
-				'3.5.1' => array(
-					'title' => 'WordPress 3.5.1 Maintenance and Security Release',
-					'link'  => 'https://wordpress.org/news/2013/01/wordpress-3-5-1/'
-				),
-				'3.5' => array(
-					'title' => 'WordPress 3.5 “Elvin”',
-					'link'  => 'https://wordpress.org/news/2012/12/elvin/'
-				)
-			),
-			'3.4' => array(
-				'3.4.2' => array(
-					'title' => 'WordPress 3.4.2 Maintenance and Security Release',
-					'link'  => 'https://wordpress.org/news/2012/09/wordpress-3-4-2/'
-				),
-				'3.4.1' => array(
-					'title' => 'WordPress 3.4.1 Maintenance and Security Release',
-					'link'  => 'https://wordpress.org/news/2012/06/wordpress-3-4-1/'
-				),
-				'3.4' => array(
-					'title' => 'WordPress 3.4 “Green”',
-					'link'  => 'https://wordpress.org/news/2012/06/green/'
-				)
-			),
-			'3.3' => array(
-				'3.3.1' => array(
-					'title' => 'WordPress 3.3.1 Security and Maintenance Release',
-					'link'  => 'https://wordpress.org/news/2012/01/wordpress-3-3-1/'
-				),
-				'3.3' => array(
-					'title' => 'WordPress 3.3 “Sonny”',
-					'link'  => 'https://wordpress.org/news/2011/12/sonny/'
-				)
-			),
-		);
+		if ( false === ( $releases = get_transient( 'wordpress_releases_' . $major ) ) ) {
+			$request = wp_remote_get( self::$api . '/releases/' . $major );
+			$releases    = json_decode( wp_remote_retrieve_body( $request ) );
 
-		if( isset( $releases[ $major ] ) ) {
-			return $releases[ $major ];
+			set_transient( 'wordpress_downloads_day', $releases, DAY_IN_SECONDS );
 		}
 
-		return array();
+		if ( ! $releases ) {
+			$releases = array();
+		}
+
+		return $releases;
 	}
 
 
