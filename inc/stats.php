@@ -152,8 +152,8 @@ class WP_Central_Stats {
 		}
 
 		if ( false === ( $releases = get_transient( 'wordpress_releases_' . $major ) ) ) {
-			$request = wp_remote_get( self::$api . '/releases/' . $major );
-			$releases    = json_decode( wp_remote_retrieve_body( $request ) );
+			$request  = wp_remote_get( self::$api . '/releases/' . $major );
+			$releases = json_decode( wp_remote_retrieve_body( $request ) );
 
 			set_transient( 'wordpress_downloads_day', $releases, DAY_IN_SECONDS );
 		}
