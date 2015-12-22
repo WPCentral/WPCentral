@@ -5,6 +5,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Central_Stats {
 
+	private static $api = 'http://188.166.68.183/stats-service';
+
 	public static function db_table() {
 		global $wpdb;
 
@@ -36,36 +38,29 @@ class WP_Central_Stats {
 		global $wpdb;
 
 		if ( false === ( $data = get_transient( 'wordpress_downloads_day' ) ) ) {
-			$table = self::db_table();
-			$version = self::wp_version();
-			$query = "SELECT MAX(count) as count, Date(date_gmt) as date, date_format(date_gmt,'%m/%d/%Y') as date_display FROM {$table} WHERE type='downloads' AND version = '{$version}' GROUP BY YEAR(date_gmt), MONTH(date_gmt), DATE(date_gmt) ORDER BY date_gmt";
-			$data = $wpdb->get_results( $query );
+			$request = wp_remote_get( self::$api . '/count-history/' . self::wp_version() );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
+			$data    = array_filter( $data, array( __CLASS__, 'make_value_number' ) );
 
-			$data = array_filter( $data, array( __CLASS__, 'make_value_number' ) );
-
-			set_transient( 'wordpress_downloads_day', $data, 60 );
+			set_transient( 'wordpress_downloads_day', $data, 600 );
 		}
 
 		return $data;
 	}
 
 	public static function wordpress_downloads() {
-		global $wpdb;
+		if ( false === ( $count = get_transient( 'wordpress_downloads' ) ) ) {
+			$request = wp_remote_get( self::$api . '/count/' . self::wp_version() );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-		if ( false === ( $count = get_transient( 'wordpress_downloads2' ) ) ) {
-			$table = self::db_table();
-			$version = self::wp_version();
-			$query = "SELECT count FROM {$table} WHERE type='downloads' AND version = '{$version}' ORDER BY date_gmt DESC LIMIT 1";
-			$count = $wpdb->get_row( $query );
-
-			if ( $count ) {
-				$count = number_format( $count->count );
+			if ( $data ) {
+				$count = number_format( $data->count );
 			}
 			else {
 				$count = 0;
 			}
 
-			set_transient( 'wordpress_downloads', $count, 60 );
+			set_transient( 'wordpress_downloads', $count, 60 - date('s') );
 		}
 
 		return $count;
@@ -75,24 +70,22 @@ class WP_Central_Stats {
 		global $wpdb, $wp_locale;
 
 		if ( false === ( $count = get_transient( 'downloads_last7days' ) ) ) {
-			$table = self::db_table();
-			$version = self::wp_version();
-			$query = "SELECT ( MAX(count) - MIN(count) ) as downloads, WEEKDAY( date_gmt ) as weekday FROM {$table} WHERE type='downloads' AND version = '{$version}' GROUP BY YEAR(date_gmt), MONTH(date_gmt), DATE(date_gmt) ORDER BY date_gmt DESC LIMIT 7";
-			$data = $wpdb->get_results( $query );
+			$request = wp_remote_get( self::$api . '/last-7days/' . self::wp_version() );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
 			$count = array();
 
-			foreach( $data as $row ) {
+			foreach ( $data as $row ) {
 				$weekday = ( $row->weekday == 6 ) ? 0 : $row->weekday + 1;
 
 				$count[] = array( 'label' => $weekday, 'value' => absint( $row->downloads ) );
 			}
 
-			set_transient( 'downloads_last7days', $count, 60 );
+			set_transient( 'downloads_last7days', $count, 600 );
 		}
 
 
-		for( $i = 0; $i < count( $count ); ++$i ) {
+		for ( $i = 0; $i < count( $count ); ++$i ) {
 			$count[ $i ]['label'] = $wp_locale->get_weekday( $count[ $i ]['label'] );
 		}
 
@@ -103,7 +96,7 @@ class WP_Central_Stats {
 		$data  = self::get_counts_data( 'hours' );
 		$hours = array();
 
-		foreach( $data as $hour => $value ) {
+		foreach ( $data as $hour => $value ) {
 			$hours[] = array( 'label' => $hour, 'value' => $value );
 		}
 
@@ -116,7 +109,7 @@ class WP_Central_Stats {
 		$data = self::get_counts_data( 'days' );
 		$days = array();
 
-		foreach( $data as $day => $value ) {
+		foreach ( $data as $day => $value ) {
 			$days[] = array( 'label' => $wp_locale->get_weekday( $day ), 'value' => $value );
 		}
 
@@ -131,23 +124,13 @@ class WP_Central_Stats {
 		}
 
 		if ( false === ( $data = get_transient( 'wordpress_counts_' . $type ) ) ) {
-			$table = self::db_table();
-			$version = self::wp_version();
-			$query = "SELECT ( MAX(count) - MIN(count) ) as downloads, WEEKDAY( date_gmt ) as weekday, HOUR( date_gmt ) as hour FROM {$table} WHERE type='downloads' AND version = '{$version}' GROUP BY YEAR(date_gmt), MONTH(date_gmt), DATE(date_gmt), HOUR(date_gmt)";
-			$rows  = $wpdb->get_results( $query );
+			$request = wp_remote_get( self::$api . '/count-stats/' . self::wp_version() );
+			$counts  = json_decode( wp_remote_retrieve_body( $request ) );
 
-			$days = array( 0, 0, 0, 0, 0, 0, 0 );
-			$hours = array( 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 );
+			set_transient( 'wordpress_counts_days', $counts->days, 600 );
+			set_transient( 'wordpress_counts_hours', $counts->hours, 600 );
 
-			foreach( $rows as $row ) {
-				$days[ $row->weekday ] = $days[ $row->weekday ] + $row->downloads;
-				$hours[ $row->hour ] = $hours[ $row->hour ] + $row->downloads;
-			}
-
-			set_transient( 'wordpress_counts_days', $days, 60 );
-			set_transient( 'wordpress_counts_hours', $hours, 60 );
-
-			$data = $$type;
+			$data = $counts->$type;
 		}
 
 		return $data;
