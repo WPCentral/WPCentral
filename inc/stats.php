@@ -35,8 +35,6 @@ class WP_Central_Stats {
 
 
 	public static function downloads_per_day() {
-		global $wpdb;
-
 		if ( false === ( $data = get_transient( 'wordpress_downloads_day' ) ) ) {
 			$request = wp_remote_get( self::$api . '/count-history/' . self::wp_version() );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
@@ -67,7 +65,7 @@ class WP_Central_Stats {
 	}
 
 	public static function downloads_last7days() {
-		global $wpdb, $wp_locale;
+		global $wp_locale;
 
 		if ( false === ( $count = get_transient( 'downloads_last7days' ) ) ) {
 			$request = wp_remote_get( self::$api . '/last-7days/' . self::wp_version() );
@@ -117,9 +115,7 @@ class WP_Central_Stats {
 	}
 
 	private static function get_counts_data( $type ) {
-		global $wpdb;
-
-		if( 'hours' != $type && 'days' != $type ) {
+		if ( 'hours' != $type && 'days' != $type ) {
 			return array();
 		}
 
