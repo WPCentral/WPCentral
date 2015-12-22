@@ -38,7 +38,6 @@ class WP_Central_Stats {
 		if ( false === ( $data = get_transient( 'wordpress_downloads_day' ) ) ) {
 			$request = wp_remote_get( self::$api . '/count-history/' . self::wp_version() );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
-			$data    = array_filter( $data, array( __CLASS__, 'make_value_number' ) );
 
 			set_transient( 'wordpress_downloads_day', $data, 600 );
 		}
@@ -175,7 +174,6 @@ class WP_Central_Stats {
 			$query = "SELECT s1.count as value, s1.version as label FROM {$table} as s1 LEFT JOIN {$table} s2 ON (s1.type = s2.type AND s1.date_gmt < s2.date_gmt) WHERE s1.type='wordpress' AND s2.type IS NULL AND s1.date_gmt > DATE_SUB(CURDATE(), INTERVAL 25 HOUR)";
 			$data = $wpdb->get_results( $query );
 
-			$data = array_values( array_filter( $data, array( __CLASS__, 'make_value_number' ) ) );
 
 			set_transient( 'wordpress_versions', $data, HOUR_IN_SECONDS );
 		}
@@ -191,7 +189,6 @@ class WP_Central_Stats {
 			$query = "SELECT s1.count as value, s1.version as label FROM {$table} as s1 LEFT JOIN {$table} s2 ON (s1.type = s2.type AND s1.date_gmt < s2.date_gmt) WHERE s1.type='php' AND s2.type IS NULL AND s1.date_gmt > DATE_SUB(CURDATE(), INTERVAL 25 HOUR)";
 			$data = $wpdb->get_results( $query );
 
-			$data = array_values( array_filter( $data, array( __CLASS__, 'make_value_number' ) ) );
 
 			set_transient( 'php_versions', $data, HOUR_IN_SECONDS );
 		}
@@ -207,7 +204,6 @@ class WP_Central_Stats {
 			$query = "SELECT s1.count as value, s1.version as label FROM {$table} as s1 LEFT JOIN {$table} s2 ON (s1.type = s2.type AND s1.date_gmt < s2.date_gmt) WHERE s1.type='mysql' AND s2.type IS NULL AND s1.date_gmt > DATE_SUB(CURDATE(), INTERVAL 25 HOUR)";
 			$data = $wpdb->get_results( $query );
 
-			$data = array_values( array_filter( $data, array( __CLASS__, 'make_value_number' ) ) );
 
 			set_transient( 'mysql_versions', $data, HOUR_IN_SECONDS );
 		}
@@ -290,24 +286,6 @@ class WP_Central_Stats {
 		$data = array_values( $data );
 
 		return $data;
-	}
-
-
-	public static function make_value_number( $item ) {
-		if ( isset( $item->value ) ) {
-			$item->value = (float) $item->value;
-
-			if ( $item->value ) {
-				return $item;
-			}
-		}
-		else if ( isset( $item->count ) ) {
-			$item->count = (float) $item->count;
-
-			return $item;
-		}
-
-		return false;
 	}
 
 }
