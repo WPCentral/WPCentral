@@ -179,12 +179,8 @@ class WP_Central_Stats {
 
 	public static function php_version() {
 		if ( false === ( $data = get_transient( 'php_versions' ) ) ) {
-			global $wpdb;
-
-			$table = self::db_table();
-			$query = "SELECT s1.count as value, s1.version as label FROM {$table} as s1 LEFT JOIN {$table} s2 ON (s1.type = s2.type AND s1.date_gmt < s2.date_gmt) WHERE s1.type='php' AND s2.type IS NULL AND s1.date_gmt > DATE_SUB(CURDATE(), INTERVAL 25 HOUR)";
-			$data = $wpdb->get_results( $query );
-
+			$request = wp_remote_get( self::$api . '/stats/php' );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
 			set_transient( 'php_versions', $data, HOUR_IN_SECONDS );
 		}
