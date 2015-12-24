@@ -7,12 +7,6 @@ class WP_Central_Stats {
 
 	private static $api = 'http://188.166.68.183/stats-service';
 
-	public static function db_table() {
-		global $wpdb;
-
-		return $wpdb->prefix . 'wordpress_stats';
-	}
-
 	public static function wp_version( $include_minor = false ) {
 		if ( false === ( $version = get_transient( 'wordpress_version' ) ) ) {
 			$request = wp_remote_get( 'http://api.wordpress.org/core/version-check/1.7/' );
