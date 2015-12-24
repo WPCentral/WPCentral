@@ -155,7 +155,7 @@ class WP_Central_Stats {
 			$request  = wp_remote_get( self::$api . '/releases/' . $major );
 			$releases = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'wordpress_downloads_day', $releases, DAY_IN_SECONDS );
+			set_transient( 'wordpress_releases_' . $major, $releases, DAY_IN_SECONDS );
 		}
 
 		if ( ! $releases ) {
