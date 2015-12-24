@@ -171,7 +171,7 @@ class WP_Central_Stats {
 			$request = wp_remote_get( self::$api . '/stats/wordpress' );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'wordpress_versions', $data, HOUR_IN_SECONDS );
+			set_transient( 'wordpress_versions', $data, DAY_IN_SECONDS );
 		}
 
 		return $data;
@@ -182,7 +182,7 @@ class WP_Central_Stats {
 			$request = wp_remote_get( self::$api . '/stats/php' );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'php_versions', $data, HOUR_IN_SECONDS );
+			set_transient( 'php_versions', $data, DAY_IN_SECONDS );
 		}
 
 		return $data;
@@ -193,7 +193,7 @@ class WP_Central_Stats {
 			$request = wp_remote_get( self::$api . '/stats/mysql' );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'mysql_versions', $data, HOUR_IN_SECONDS );
+			set_transient( 'mysql_versions', $data, DAY_IN_SECONDS );
 		}
 
 		return $data;
