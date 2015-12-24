@@ -204,24 +204,12 @@ class WP_Central_Stats {
 	 * @return array
 	 */
 	public static function wordpress_version_by_day() {
-		global $wpdb;
+		if ( false === ( $data = get_transient( 'wordpress_versions_by_day' ) ) ) {
+			$request = wp_remote_get( self::$api . '/stats-history/wordpress' );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-		//$query = "SELECT version, GROUP_CONCAT(count) as mycount FROM ".self::db_table()." WHERE type='php' GROUP BY version";
-		$table = self::db_table();
-		$query = "SELECT DATE_FORMAT(date_gmt,'%X W%V') AS date, version, AVG(count) AS count
-		FROM {$table}
-		WHERE TYPE='wordpress' AND VERSION NOT IN ('2.7', '2.8', '2.9')
-		GROUP BY DATE_FORMAT(date_gmt,'%X W%V'), version";
-
-		$results = $wpdb->get_results( $query );
-		$data    = array();
-
-		foreach ( $results as $item ) {
-			$data[ $item->date ]['date']           = $item->date;
-			$data[ $item->date ][ $item->version ] = round( $item->count, 2 );
+			set_transient( 'wordpress_versions_by_day', $data, DAY_IN_SECONDS );
 		}
-
-		$data = array_values( $data );
 
 		return $data;
 	}
@@ -230,23 +218,12 @@ class WP_Central_Stats {
 	 * @return array
 	 */
 	public static function php_version_by_day() {
-		global $wpdb;
+		if ( false === ( $data = get_transient( 'php_versions_by_day' ) ) ) {
+			$request = wp_remote_get( self::$api . '/stats-history/php' );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-		$table = self::db_table();
-		$query = "SELECT DATE_FORMAT(date_gmt,'%X W%V') AS date, version, AVG(count) AS count
-		FROM {$table}
-		WHERE type='php' AND version NOT IN ('4.3', '4.4', '5.0', '5.7')
-		GROUP BY DATE_FORMAT(date_gmt,'%X W%V'), version";
-
-		$results = $wpdb->get_results( $query );
-		$data    = array();
-
-		foreach ( $results as $item ) {
-			$data[ $item->date ]['date']           = $item->date;
-			$data[ $item->date ][ $item->version ] = round( $item->count, 2 );
+			set_transient( 'php_versions_by_day', $data, HOUR_IN_SECONDS );
 		}
-
-		$data = array_values( $data );
 
 		return $data;
 	}
@@ -255,23 +232,12 @@ class WP_Central_Stats {
 	 * @return array
 	 */
 	public static function mysql_version_by_day() {
-		global $wpdb;
+		if ( false === ( $data = get_transient( 'mysql_versions_by_day' ) ) ) {
+			$request = wp_remote_get( self::$api . '/stats-history/mysql' );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-		$table = self::db_table();
-		$query = "SELECT DATE_FORMAT(date_gmt,'%X W%V') AS date, version, AVG(count) AS count
-		FROM {$table}
-		WHERE type='mysql' AND version NOT IN ('3.23', '4.0', '4.1', '5.', '5.13', '5.2', '5.3', '5.4', '5.7')
-		GROUP BY DATE_FORMAT(date_gmt,'%X W%V'), version";
-
-		$results = $wpdb->get_results( $query );
-		$data    = array();
-
-		foreach ( $results as $item ) {
-			$data[ $item->date ]['date']           = $item->date;
-			$data[ $item->date ][ $item->version ] = round( $item->count, 2 );
+			set_transient( 'mysql_versions_by_day', $data, HOUR_IN_SECONDS );
 		}
-
-		$data = array_values( $data );
 
 		return $data;
 	}
