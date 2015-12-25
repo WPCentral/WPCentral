@@ -7,7 +7,7 @@ class WP_Central_Graph_Chartjs extends WP_Central_Graph_Abstract {
 
 	public function register_script() {
 
-		wp_register_script( 'chartjs', plugins_url( 'chart.min.js', __FILE__ ), array(), '1.0.1-beta.4' );
+		wp_register_script( 'chartjs', plugins_url( 'chart.min.js', __FILE__ ), array(), '1.0.2' );
 		wp_enqueue_script( 'chartjs' );
 	}
 
