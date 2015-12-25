@@ -114,7 +114,7 @@ class WP_Central_Graph_Chartjs extends WP_Central_Graph_Abstract {
 		$html .= 'jQuery(document).ready(function($) {';
 
 		$options = array(
-			'tooltipTemplate' => "<%= Math.floor(value/1000000) %> M",
+			'tooltipTemplate' => "<%= nFormatter(value) %>",
 			'responsive'      => true,
 		);
 
