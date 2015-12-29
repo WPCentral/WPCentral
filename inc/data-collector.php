@@ -234,8 +234,9 @@ class WP_Central_Data_Colector {
 		$version = $wp_version;
 
 		// If there is an update then use that version.
+		include ABSPATH . 'wp-admin/includes/update.php';
 		$cur = get_preferred_from_update_core();
-		if ( isset( $cur->response ) || $cur->response == 'upgrade' ) {
+		if ( isset( $cur->response ) && $cur->response == 'upgrade' ) {
 			$version = $cur->current;
 		}
 

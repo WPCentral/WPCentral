@@ -91,6 +91,8 @@ class WP_Central_WordPress_Api {
 			return false;
 		}
 
+		include ABSPATH . 'wp-admin/includes/theme.php';
+
 		$defaults = array(
 			'author'   => $username,
 			'per_page' => 30,
