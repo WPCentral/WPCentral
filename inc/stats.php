@@ -133,6 +133,7 @@ class WP_Central_Stats {
 
 			if ( $data ) {
 				$releases = wp_list_pluck( $data, 'version' );
+				$releases = array_reverse( $releases );
 				set_transient( 'wordpress_releases', $releases, DAY_IN_SECONDS );
 			}
 		}
