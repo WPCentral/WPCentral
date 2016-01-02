@@ -28,20 +28,20 @@ class WP_Central_Stats {
 	}
 
 
-	public static function downloads_per_day() {
-		if ( false === ( $data = get_transient( 'wordpress_downloads_day' ) ) ) {
-			$request = wp_remote_get( self::$api . '/count-history/' . self::wp_version() );
+	public static function downloads_per_day( $wp_version ) {
+		if ( false === ( $data = get_transient( 'wordpress_downloads_day_' . $wp_version ) ) ) {
+			$request = wp_remote_get( self::$api . '/count-history/' . $wp_version );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'wordpress_downloads_day', $data, 600 );
+			set_transient( 'wordpress_downloads_day_' . $wp_version, $data, 600 );
 		}
 
 		return $data;
 	}
 
-	public static function wordpress_downloads() {
-		if ( false === ( $count = get_transient( 'wordpress_downloads' ) ) ) {
-			$request = wp_remote_get( self::$api . '/count/' . self::wp_version() );
+	public static function wordpress_downloads( $wp_version ) {
+		if ( false === ( $count = get_transient( 'wordpress_downloads_' . $wp_version ) ) ) {
+			$request = wp_remote_get( self::$api . '/count/' . $wp_version );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
 			if ( $data ) {
@@ -51,17 +51,17 @@ class WP_Central_Stats {
 				$count = 0;
 			}
 
-			set_transient( 'wordpress_downloads', $count, 60 - date('s') );
+			set_transient( 'wordpress_downloads_' . $wp_version, $count, 60 - date('s') );
 		}
 
 		return $count;
 	}
 
-	public static function downloads_last7days() {
+	public static function downloads_last7days( $wp_version ) {
 		global $wp_locale;
 
-		if ( false === ( $count = get_transient( 'downloads_last7days' ) ) ) {
-			$request = wp_remote_get( self::$api . '/last-7days/' . self::wp_version() );
+		if ( false === ( $count = get_transient( 'downloads_last7days_' . $wp_version ) ) ) {
+			$request = wp_remote_get( self::$api . '/last-7days/' . $wp_version );
 			$data    = json_decode( wp_remote_retrieve_body( $request ) );
 
 			$count = array();
@@ -72,7 +72,7 @@ class WP_Central_Stats {
 				$count[] = array( 'label' => $weekday, 'value' => absint( $row->downloads ) );
 			}
 
-			set_transient( 'downloads_last7days', $count, 600 );
+			set_transient( 'downloads_last7days_' . $wp_version, $count, 600 );
 		}
 
 
@@ -83,8 +83,8 @@ class WP_Central_Stats {
 		return $count;
 	}
 
-	public static function counts_per_hour() {
-		$data  = self::get_counts_data( 'hours' );
+	public static function counts_per_hour( $wp_version ) {
+		$data  = self::get_counts_data( $wp_version, 'hours' );
 		$hours = array();
 
 		foreach ( $data as $hour => $value ) {
@@ -94,10 +94,10 @@ class WP_Central_Stats {
 		return $hours;
 	}
 
-	public static function counts_per_day() {
+	public static function counts_per_day( $wp_version ) {
 		global $wp_locale;
 
-		$data = self::get_counts_data( 'days' );
+		$data = self::get_counts_data( $wp_version, 'days' );
 		$days = array();
 
 		foreach ( $data as $day => $value ) {
@@ -107,17 +107,17 @@ class WP_Central_Stats {
 		return $days;
 	}
 
-	private static function get_counts_data( $type ) {
+	private static function get_counts_data( $wp_version, $type ) {
 		if ( 'hours' != $type && 'days' != $type ) {
 			return array();
 		}
 
-		if ( false === ( $data = get_transient( 'wordpress_counts_' . $type ) ) ) {
-			$request = wp_remote_get( self::$api . '/count-stats/' . self::wp_version() );
+		if ( false === ( $data = get_transient( 'wordpress_counts_' . $wp_version . '_' . $type ) ) ) {
+			$request = wp_remote_get( self::$api . '/count-stats/' . $wp_version );
 			$counts  = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'wordpress_counts_days', $counts->days, 600 );
-			set_transient( 'wordpress_counts_hours', $counts->hours, 600 );
+			set_transient( 'wordpress_counts_' . $wp_version . '_days', $counts->days, 600 );
+			set_transient( 'wordpress_counts_' . $wp_version . '_hours', $counts->hours, 600 );
 
 			$data = $counts->$type;
 		}
