@@ -11,7 +11,7 @@ class WP_Central_Versions {
 	}
 
 	public function add_rewrite_rule() {
-		add_rewrite_rule('^version/([^/]*)', 'index.php?wp_version_selector=$matches[1]', 'top');
+		add_rewrite_rule('^version/([0-9.]+)/?$', 'index.php?wp_version_selector=$matches[1]', 'top');
 	}
 
 	public function query_vars( $query_vars ) {
