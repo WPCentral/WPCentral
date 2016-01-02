@@ -21,6 +21,7 @@ include 'inc/data-collector.php';
 include 'inc/graph.php';
 include 'inc/json-api.php';
 include 'inc/stats.php';
+include 'inc/versions.php';
 include 'inc/wordpress-api.php';
 
 // Graphs
@@ -33,13 +34,14 @@ if ( defined( 'WP_CLI' ) && WP_CLI ) {
 
 class WP_Central {
 
-	const version = '1.1';
+	const version = '1.2';
 
 	public function __construct() {
 		new WP_Central_Contributor;
 		new WP_Central_Graph;
 		new WP_Central_JSON_API;
 		new WP_Central_Stats;
+		new WP_Central_Versions;
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
 	}
