@@ -35,40 +35,14 @@ class WP_Central {
 
 	const version = '1.1';
 
-	private $stats;
-
 	public function __construct() {
 		new WP_Central_Contributor;
 		new WP_Central_Graph;
 		new WP_Central_JSON_API;
-		$this->stats = new WP_Central_Stats;
-
-		register_activation_hook( __FILE__, array( $this, 'install' ) );
-		register_deactivation_hook( __FILE__, array( $this, 'deactivate' ) );
+		new WP_Central_Stats;
 
 		add_action( 'plugins_loaded', array( $this, 'load_textdomain' ) );
-		add_filter( 'cron_schedules', array( $this, 'cron_schedules' ) );
 	}
-
-
-	/**
-	 * Calls the install methods of the features
-	 *
-	 * @since 1.1.0
-	 */
-	public function install() {
-		$this->stats->install();
-	}
-
-	/**
-	 * Calls the deactivate methods of the features
-	 *
-	 * @since 1.1.0
-	 */
-	public function deactivate() {
-		$this->stats->deactivate();
-	}
-
 
 	/**
 	 * Load plugin textdomain.
@@ -77,17 +51,6 @@ class WP_Central {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'wpcentral', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' ); 
-	}
-
-	/**
-	 * Adds a minutly cron
-	 *
-	 * @since 1.1.0
-	 */
-	public function cron_schedules( $schedules ) {
-		$schedules['minutly'] = array( 'interval' => MINUTE_IN_SECONDS, 'display' => __( 'Every minute', 'wordpress-stats' ) );
-
-		return $schedules;
 	}
 
 }
