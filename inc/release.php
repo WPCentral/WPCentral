@@ -86,10 +86,12 @@ class WP_Central_WordPress_Release {
 
 			$count = array();
 
-			foreach ( $data as $row ) {
-				$weekday = ( $row->weekday == 6 ) ? 0 : $row->weekday + 1;
+			if ( $data ) {
+				foreach ( $data as $row ) {
+					$weekday = ( $row->weekday == 6 ) ? 0 : $row->weekday + 1;
 
-				$count[] = array( 'label' => $weekday, 'value' => absint( $row->downloads ) );
+					$count[] = array( 'label' => $weekday, 'value' => absint( $row->downloads ) );
+				}
 			}
 
 			set_transient( 'downloads_last7days_' . $this->version, $count, 600 );
@@ -161,10 +163,15 @@ class WP_Central_WordPress_Release {
 			$request = wp_remote_get( self::$api . '/count-stats/' . $this->version );
 			$counts  = json_decode( wp_remote_retrieve_body( $request ) );
 
-			set_transient( 'wordpress_counts_' . $this->version . '_days', $counts->days, 600 );
-			set_transient( 'wordpress_counts_' . $this->version . '_hours', $counts->hours, 600 );
+			if ( $counts ) {
+				set_transient( 'wordpress_counts_' . $this->version . '_days', $counts->days, 600 );
+				set_transient( 'wordpress_counts_' . $this->version . '_hours', $counts->hours, 600 );
 
-			$data = $counts->$type;
+				$data = $counts->$type;
+			}
+			else {
+				$data = array();
+			}
 		}
 
 		return $data;
