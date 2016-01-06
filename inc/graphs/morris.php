@@ -3,10 +3,10 @@
 class WP_Central_Graph_Morris extends WP_Central_Graph_Abstract {
 
 	public function register_script() {
-		wp_register_style( 'morris', plugins_url( 'morris.css', __FILE__ ), array(), '0.4.3' );
+		wp_register_style( 'morris', plugins_url( 'morris.css', __FILE__ ), array(), '0.5.1' );
 		wp_enqueue_style( 'morris' );
 
-		wp_register_script( 'morris', plugins_url( 'morris.min.js', __FILE__ ), array( 'jquery', 'raphael' ), '0.4.3' );
+		wp_register_script( 'morris', plugins_url( 'morris.min.js', __FILE__ ), array( 'jquery', 'raphael' ), '0.5.1' );
 		wp_enqueue_script( 'morris' );
 	}
 
