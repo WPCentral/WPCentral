@@ -56,6 +56,32 @@ class WP_Central_WordPress_Release {
 		return $releases;
 	}
 
+	public function get_lifetime() {
+		$d1 = new DateTime( $this->data->time_start );
+		$d2 = new DateTime( $this->data->time_end );
+
+		$interval = $d2->diff( $d1 );
+		$lifetime = '';
+
+		if ( $interval->m ) {
+			$lifetime = sprintf( _n( '%s month', '%s months', $interval->m ), $interval->m );
+		}
+		if ( $interval->d ) {
+			if ( $lifetime ) {
+				$lifetime = sprintf(
+					__( '%s and %s', 'wpcentral' ),
+					$lifetime,
+					sprintf( _n( '%s day', '%s day', $interval->d ), $interval->d )
+				);
+			}
+			else {
+				$lifetime = sprintf( _n( '%s day', '%s day', $interval->d ), $interval->d );
+			}
+		}
+
+		return $lifetime;
+	}
+
 	public function get_download_count() {
 		if ( false === ( $count = get_transient( 'wordpress_downloads_' . $this->version ) ) ) {
 			$request = wp_remote_get( self::$api . '/count/' . $this->version );
