@@ -22,6 +22,14 @@ class WP_Central_WordPress_Release {
 	// Public facing methods
 	//
 
+	public function get_data_item( $name, $default = '' ) {
+		if ( isset( $this->data->$name ) ) {
+			return $this->data->$name;
+		}
+
+		return $default;
+	}
+
 	public function get_title() {
 		if ( isset( $this->data->name ) && $this->data->name ) {
 			$title = sprintf( __( 'WordPress %s “%s”' ), $this->version, $this->data->name );
