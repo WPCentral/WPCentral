@@ -20,6 +20,7 @@ include 'inc/contributors.php';
 include 'inc/data-collector.php';
 include 'inc/graph.php';
 include 'inc/json-api.php';
+include 'inc/release.php';
 include 'inc/stats.php';
 include 'inc/versions.php';
 include 'inc/wordpress-api.php';

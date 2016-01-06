@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class WP_Central_Stats {
 
-	private static $api = 'http://188.166.68.183/stats-service';
+	private static $api = 'http://10.133.166.181/stats-service';
 
 	public static function wp_version( $include_minor = false ) {
 		if ( false === ( $version = get_transient( 'wordpress_version' ) ) ) {
@@ -28,104 +28,6 @@ class WP_Central_Stats {
 	}
 
 
-	public static function downloads_per_day( $wp_version ) {
-		if ( false === ( $data = get_transient( 'wordpress_downloads_day_' . $wp_version ) ) ) {
-			$request = wp_remote_get( self::$api . '/count-history/' . $wp_version );
-			$data    = json_decode( wp_remote_retrieve_body( $request ) );
-
-			set_transient( 'wordpress_downloads_day_' . $wp_version, $data, 600 );
-		}
-
-		return $data;
-	}
-
-	public static function wordpress_downloads( $wp_version ) {
-		if ( false === ( $count = get_transient( 'wordpress_downloads_' . $wp_version ) ) ) {
-			$request = wp_remote_get( self::$api . '/count/' . $wp_version );
-			$data    = json_decode( wp_remote_retrieve_body( $request ) );
-
-			if ( $data ) {
-				$count = number_format( $data->count );
-			}
-			else {
-				$count = 0;
-			}
-
-			set_transient( 'wordpress_downloads_' . $wp_version, $count, 60 - date('s') );
-		}
-
-		return $count;
-	}
-
-	public static function downloads_last7days( $wp_version ) {
-		global $wp_locale;
-
-		if ( false === ( $count = get_transient( 'downloads_last7days_' . $wp_version ) ) ) {
-			$request = wp_remote_get( self::$api . '/last-7days/' . $wp_version );
-			$data    = json_decode( wp_remote_retrieve_body( $request ) );
-
-			$count = array();
-
-			foreach ( $data as $row ) {
-				$weekday = ( $row->weekday == 6 ) ? 0 : $row->weekday + 1;
-
-				$count[] = array( 'label' => $weekday, 'value' => absint( $row->downloads ) );
-			}
-
-			set_transient( 'downloads_last7days_' . $wp_version, $count, 600 );
-		}
-
-
-		for ( $i = 0; $i < count( $count ); ++$i ) {
-			$count[ $i ]['label'] = $wp_locale->get_weekday( $count[ $i ]['label'] );
-		}
-
-		return $count;
-	}
-
-	public static function counts_per_hour( $wp_version ) {
-		$data  = self::get_counts_data( $wp_version, 'hours' );
-		$hours = array();
-
-		foreach ( $data as $hour => $value ) {
-			$hours[] = array( 'label' => $hour, 'value' => $value );
-		}
-
-		return $hours;
-	}
-
-	public static function counts_per_day( $wp_version ) {
-		global $wp_locale;
-
-		$data = self::get_counts_data( $wp_version, 'days' );
-		$days = array();
-
-		foreach ( $data as $day => $value ) {
-			$days[] = array( 'label' => $wp_locale->get_weekday( $day ), 'value' => $value );
-		}
-
-		return $days;
-	}
-
-	private static function get_counts_data( $wp_version, $type ) {
-		if ( 'hours' != $type && 'days' != $type ) {
-			return array();
-		}
-
-		if ( false === ( $data = get_transient( 'wordpress_counts_' . $wp_version . '_' . $type ) ) ) {
-			$request = wp_remote_get( self::$api . '/count-stats/' . $wp_version );
-			$counts  = json_decode( wp_remote_retrieve_body( $request ) );
-
-			set_transient( 'wordpress_counts_' . $wp_version . '_days', $counts->days, 600 );
-			set_transient( 'wordpress_counts_' . $wp_version . '_hours', $counts->hours, 600 );
-
-			$data = $counts->$type;
-		}
-
-		return $data;
-	}
-
-
 	public static function get_major_releases() {
 		if ( false === ( $releases = get_transient( 'wordpress_releases' ) ) ) {
 			$request = wp_remote_get( self::$api . '/versions' );
@@ -141,23 +43,8 @@ class WP_Central_Stats {
 		return $releases;
 	}
 
-	public static function get_minor_releases( $major = null ) {
-		if ( $major == null ) {
-			$major = self::wp_version();
-		}
-
-		if ( false === ( $releases = get_transient( 'wordpress_releases_' . $major ) ) ) {
-			$request  = wp_remote_get( self::$api . '/releases/' . $major );
-			$releases = json_decode( wp_remote_retrieve_body( $request ) );
-
-			set_transient( 'wordpress_releases_' . $major, $releases, DAY_IN_SECONDS );
-		}
-
-		if ( ! $releases ) {
-			$releases = array();
-		}
-
-		return $releases;
+	public static function get_release_data( $major ) {
+		return new WP_Central_WordPress_Release( $major );
 	}
 
 
