@@ -23,8 +23,8 @@ class WP_Central_WordPress_Release {
 	//
 
 	public function get_title() {
-		if ( isset( $data->name ) &&  $data->name ) {
-			$title = sprintf( __( 'WordPress %s “%s”' ), $this->version, $data->name );
+		if ( isset( $this->data->name ) && $this->data->name ) {
+			$title = sprintf( __( 'WordPress %s “%s”' ), $this->version, $this->data->name );
 		}
 		else {
 			$title = sprintf( __( 'WordPress %s' ), $this->version );
