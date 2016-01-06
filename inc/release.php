@@ -145,7 +145,7 @@ class WP_Central_WordPress_Release {
 				set_transient( 'wordpress_versions_' . $this->version, $data, DAY_IN_SECONDS );
 			}
 			else {
-				$data = new stdObject;
+				$data = new stdClass;
 			}
 		}
 
