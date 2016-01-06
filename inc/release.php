@@ -13,6 +13,8 @@ class WP_Central_WordPress_Release {
 
 	public function __construct( $version ) {
 		$this->version = $version;
+
+		$this->load_release_data();
 	}
 
 
@@ -129,6 +131,26 @@ class WP_Central_WordPress_Release {
 	//
 	// Internal methods
 	//
+
+	private function load_release_data() {
+		if ( $this->data ) {
+			return;
+		}
+
+		if ( false === ( $data = get_transient( 'wordpress_versions_' . $this->version ) ) ) {
+			$request = wp_remote_get( self::$api . '/versions/' . $this->version );
+			$data    = json_decode( wp_remote_retrieve_body( $request ) );
+
+			if ( $data ) {
+				set_transient( 'wordpress_versions_' . $this->version, $data, DAY_IN_SECONDS );
+			}
+			else {
+				$data = new stdObject;
+			}
+		}
+
+		$this->data = $data;
+	}
 
 	private function get_counts_data( $type ) {
 		if ( 'hours' != $type && 'days' != $type ) {
