@@ -3,6 +3,9 @@ get_header();
 
 $current_version  = WP_Central_Stats::wp_version();
 $selected_version = get_query_var('wp_version_selector') ?: $current_version;
+
+// Get release data
+$wp_release = WP_Central_Stats::get_release_data( $selected_version );
 ?>
 
 	<?php if ( class_exists( 'WP_Central_Stats' ) ) { ?>
@@ -11,7 +14,7 @@ $selected_version = get_query_var('wp_version_selector') ?: $current_version;
 			<div class="row">
 				<div class="col-sm-9">
 					<h1>
-						<?php printf( __( '%s %s stats', 'wpcentral' ), '<span>WordPress</span>', $selected_version ); ?>
+						<?php echo $wp_release->get_title(); ?>
 					</h1>
 				</div>
 
@@ -38,55 +41,14 @@ $selected_version = get_query_var('wp_version_selector') ?: $current_version;
 
 	<div id="content" class="container">
 
-		<h2 id="download-counter">
-			<?php printf( __( '%s downloads', 'wpcentral' ), WP_Central_Stats::wordpress_downloads( $selected_version ) ); ?>
-		</h2>
-
 		<?php
-			echo WP_Central_Graph::get( 'morris', 'line_chart', WP_Central_Stats::downloads_per_day( $selected_version ), array( 'x' => 'date', 'y' => 'count', 'label' => __( 'Downloads', 'wpcentral' ) ) );
+		if ( $current_version == $selected_version ) {
+			get_template_part( 'front-page-home' );
+		}
+		else {
+			get_template_part( 'front-page-version' );
+		}
 		?>
-
-		<div class="row">
-			<div class="col-md-6">
-				<h2 class="text-center"><?php _e( 'Last 7 days', 'wpcentral' ); ?></h2>
-				<?php echo WP_Central_Graph::get( 'morris', 'bar', WP_Central_Stats::downloads_last7days( $selected_version ), array( 'x' => 'label', 'y' => 'value', 'label' => __( 'Downloads', 'wpcentral' ) ) ); ?>
-			</div>
-
-			<div class="col-md-6">
-				<h2 class="text-center"><?php _e( 'Releases', 'wpcentral' ); ?></h2>
-
-				<div class="list-group">
-					<?php
-					$releases = WP_Central_Stats::get_minor_releases( $selected_version );
-					foreach ( $releases as $release ) {
-						echo "\t\t\t\t";
-						echo '<a href="' . $release->link . '" class="list-group-item">';
-						echo $release->title;
-						echo '</a>';
-					}
-					?>
-				</div>
-			</div>
-		</div>
-
-
-		<div class="row">
-			<div class="col-md-6">
-				<h2 class="text-center"><?php _e( 'Downloads per day', 'wpcentral' ); ?></h2>
-				<?php echo WP_Central_Graph::get( 'chartjs', 'radar_chart', WP_Central_Stats::counts_per_day( $selected_version ) ); ?>
-			</div>
-
-			<div class="col-md-6">
-				<h2 class="text-center"><?php _e( 'Downloads per hour', 'wpcentral' ); ?></h2>
-				<?php echo WP_Central_Graph::get( 'chartjs', 'line_chart', WP_Central_Stats::counts_per_hour( $selected_version ), array(
-					'options' => array(
-						'pointHitDetectionRadius' => 5,
-					),
-				) ); ?>
-			</div>
-		</div>
-
-		<p class="text-xs-center p-t-1"><?php _e( 'All times are GMT based', 'wpcentral' ); ?></p>
 
 	</div>
 	<?php } ?>
