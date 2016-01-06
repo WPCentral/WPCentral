@@ -19,7 +19,7 @@ class WP_Central_Stats {
 			}
 		}
 
-		if ( ! $include_minor ) {
+		if ( ! $include_minor && $version ) {
 			$version = explode( '.', $version );
 			$version = $version[0] . '.' . $version[1];
 		}
